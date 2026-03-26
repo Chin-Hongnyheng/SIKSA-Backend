@@ -1,0 +1,45 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateInstructorInput {
+  address: String
+  dob: String
+  email: String!
+  gender: String
+  instructorName: String!
+  password: String!
+  phone: Int!
+  photo_url: String
+  year: Int
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type InstructorType {
+  address: String
+  created_at: DateTime!
+  dob: DateTime
+  email: String!
+  gender: String
+  instructorId: ID!
+  instructorName: String!
+  password: String!
+  phone: Int!
+  photo_url: String
+  year: Int
+}
+
+type Mutation {
+  createInstructor(input: CreateInstructorInput!): InstructorType!
+  deleteInstructor(instructorId: ID!): Boolean!
+  updateInstructor(input: CreateInstructorInput!, instructorId: ID!): InstructorType!
+}
+
+type Query {
+  instructor(instructorId: ID!): InstructorType
+  instructors: [InstructorType!]!
+}

@@ -1,0 +1,46 @@
+type Instructor {
+  instructorId: ID!
+  instructorName: String!
+  email: String!
+  phone: Float!
+  dob: String
+  gender: String
+  address: String
+  photo_url: String
+  year: Int
+  created_at: String!
+}
+
+input CreateInstructorInput {
+  instructorName: String!
+  email: String!
+  phone: Float!
+  password: String!
+  dob: String
+  gender: String
+  address: String
+  photo_url: String
+  year: Int
+}
+
+input UpdateInstructorInput {
+  instructorName: String
+  email: String
+  phone: Float
+  dob: String
+  gender: String
+  address: String
+  photo_url: String
+  year: Int
+}
+
+type Query {
+  instructors: [Instructor!]!
+  instructor(instructorId: ID!): Instructor
+}
+
+type Mutation {
+  createInstructor(input: CreateInstructorInput!): Instructor!
+  updateInstructor(instructorId: ID!, input: UpdateInstructorInput!): Instructor!
+  deleteInstructor(instructorId: ID!): Boolean!
+}
