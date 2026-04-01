@@ -1,6 +1,4 @@
 import * as Joi from 'joi';
-import { PipeTransform, BadRequestException } from '@nestjs/common';
-import { ObjectSchema } from 'joi';
 
 export const CreateInstructorSchema = Joi.object({
   instructorName: Joi.string().trim().min(3).required(),
@@ -9,9 +7,14 @@ export const CreateInstructorSchema = Joi.object({
 
   password: Joi.string().min(6).required(),
 
-  phone: Joi.number().integer().required(),
-
-
+  phone: Joi.string()
+    .pattern(/^\d+$/)
+    .min(7)
+    .max(15)
+    .required()
+    .messages({
+      'string.pattern.base': 'Phone must contain only digits',
+    }),
 
   dob: Joi.date().optional(),
 

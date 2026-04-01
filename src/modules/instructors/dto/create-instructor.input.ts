@@ -15,7 +15,7 @@ export class CreateInstructorInput {
   password: string;
 
   @Field({ nullable: true })
-  dob?: string;
+  dob?: Date;
 
   @Field({ nullable: true })
   gender?: 'male' | 'female' | 'other';

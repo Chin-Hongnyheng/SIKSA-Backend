@@ -7,9 +7,9 @@ export class DatabaseService implements OnModuleInit {
   constructor(private readonly configService: ConfigService) {}
 
   async onModuleInit() {
-const uri = this.configService.get<string>('MONGO_URI')!;
-const dbName = this.configService.get<string>('MONGO_DB')!;
-await mongoose.connect(uri, { dbName });
+    const uri = this.configService.get<string>('MONGO_URI')!;
+    const dbName = this.configService.get<string>('MONGO_DB')!;
+    await mongoose.connect(uri, { dbName });
     console.log('Connected to MongoDB');
   }
 }
