@@ -1,0 +1,42 @@
+// data structure
+
+input CreateInstructorInput {
+  address: String
+  dob: DateTime
+  email: String!
+  gender: String
+  instructorName: String!
+  password: String!
+  phone: Int!
+  photo_url: String
+  year: Int
+}
+
+// data return
+
+type InstructorType {
+  address: String
+  created_at: DateTime!
+  dob: DateTime
+  email: String!
+  gender: String
+  instructorId: ID!
+  instructorName: String!
+  password: String!
+  phone: Int!
+  photo_url: String
+  year: Int
+}
+
+// modify
+type Mutation {
+  createInstructor(input: CreateInstructorInput!): InstructorType!
+  deleteInstructor(instructorId: ID!): Boolean!
+  updateInstructor(input: CreateInstructorInput!, instructorId: ID!): InstructorType!
+}
+
+// fetch
+type Query {
+  instructor(instructorId: ID!): InstructorType
+  instructors: [InstructorType!]!
+}
