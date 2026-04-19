@@ -1,42 +1,49 @@
-// data structure
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
 
-input CreateInstructorInput {
-  address: String
-  dob: DateTime
-  email: String!
-  gender: String
-  instructorName: String!
+input CreateLoginInput {
   password: String!
-  phone: Int!
-  photo_url: String
-  year: Int
+  userName: String!
 }
 
-// data return
-
-type InstructorType {
-  address: String
-  created_at: DateTime!
-  dob: DateTime
+input CreateRegisterInput {
+  confirmPassword: String!
   email: String!
-  gender: String
-  instructorId: ID!
-  instructorName: String!
   password: String!
-  phone: Int!
-  photo_url: String
-  year: Int
+  phone: Float!
+  role: String
+  userName: String!
 }
 
-// modify
+type LoginResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
 type Mutation {
-  createInstructor(input: CreateInstructorInput!): InstructorType!
-  deleteInstructor(instructorId: ID!): Boolean!
-  updateInstructor(input: CreateInstructorInput!, instructorId: ID!): InstructorType!
+  createUser(input: CreateLoginInput!): UserType!
+  deleteUser(id: ID!): Boolean!
+  login(input: CreateLoginInput!): LoginResponse!
+  refresh(refreshToken: String!): LoginResponse!
+  register(input: CreateRegisterInput!): RegisterResponse!
+  updateUser(id: ID!, input: CreateLoginInput!): UserType!
 }
 
-// fetch
 type Query {
-  instructor(instructorId: ID!): InstructorType
-  instructors: [InstructorType!]!
+  me: UserType!
+  user(id: ID!): UserType
+  users: [UserType!]!
+}
+
+type RegisterResponse {
+  message: String!
+}
+
+type UserType {
+  email: String!
+  id: ID!
+  phone: Float!
+  role: String!
+  userName: String!
 }

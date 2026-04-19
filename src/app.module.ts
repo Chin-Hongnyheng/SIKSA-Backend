@@ -6,10 +6,10 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { DatabaseModule } from './modules/database/database.module';
-import { StudentsModule } from './modules/students/students.module';
 import { CoursesModule } from './modules/courses/courses.module';
-import { InstructorsModule } from './modules/instructors/instructors.module';
+import { UsersModule } from './modules/users/users.module';
 import { RedisModule } from './modules/redis/redis.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -20,10 +20,10 @@ import { RedisModule } from './modules/redis/redis.module';
       sortSchema: true,
     }),
     DatabaseModule,
-    StudentsModule,
     CoursesModule,
-    InstructorsModule,
-    RedisModule
+    UsersModule,
+    RedisModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
