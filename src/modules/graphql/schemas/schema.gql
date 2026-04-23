@@ -3,8 +3,8 @@
 # ------------------------------------------------------
 
 input CreateLoginInput {
+  email: String!
   password: String!
-  userName: String!
 }
 
 input CreateRegisterInput {

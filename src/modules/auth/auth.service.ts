@@ -31,7 +31,7 @@ export class AuthService {
 
     async login(input: CreateLoginInput) {
         const user = await this.userModel.findOne({
-            userName: input.userName,
+            email: input.email,
         });
 
         if (!user) throw new UnauthorizedException('Invalid credentials');

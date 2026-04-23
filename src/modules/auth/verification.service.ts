@@ -5,7 +5,7 @@ import { EmailService } from 'src/notifications/email.service';
 
 @Injectable()
 export class VerificationService {
-    private OTP_TTL = 300; // 5 minutes
+    private OTP_TTL = 100; // 5 minutes
 
     constructor(
         private redis: RedisService,
