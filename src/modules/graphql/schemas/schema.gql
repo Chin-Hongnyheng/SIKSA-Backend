@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CreateForgetInput {
+  confirmPassword: String!
+  email: String!
+  newPassword: String!
+}
+
 input CreateLoginInput {
   email: String!
   password: String!
@@ -16,6 +22,10 @@ input CreateRegisterInput {
   userName: String!
 }
 
+type ForgetResponse {
+  message: String!
+}
+
 type LoginResponse {
   accessToken: String!
   refreshToken: String!
@@ -24,10 +34,12 @@ type LoginResponse {
 type Mutation {
   createUser(input: CreateLoginInput!): UserType!
   deleteUser(id: ID!): Boolean!
+  forgetPassword(input: CreateForgetInput!): ForgetResponse!
   login(input: CreateLoginInput!): LoginResponse!
   refresh(refreshToken: String!): LoginResponse!
   register(input: CreateRegisterInput!): RegisterResponse!
   updateUser(id: ID!, input: CreateLoginInput!): UserType!
+  validateRegister(input: CreateRegisterInput!): String!
 }
 
 type Query {
@@ -37,7 +49,9 @@ type Query {
 }
 
 type RegisterResponse {
+  accessToken: String!
   message: String!
+  refreshToken: String!
 }
 
 type UserType {

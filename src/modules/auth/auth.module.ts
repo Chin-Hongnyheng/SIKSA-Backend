@@ -9,6 +9,11 @@ import { User, userSchema } from '../users/users.schema';
 import { VerificationService } from './verification.service';
 import { VerificationController } from './verification.controller';
 import { EmailService } from 'src/notifications/email.service';
+import { VerifyUserPipe } from 'src/common/pipe/user-verification.pipe';
+import { UsernamePipe } from 'src/common/pipe/username.pipe';
+import { EmailPipe } from 'src/common/pipe/email.pipe';
+import { PasswordPipe } from 'src/common/pipe/password.pipe';
+import { UserBlock } from 'src/common/pipe/UserBlock.pipe';
 
 @Module({
   imports: [
@@ -19,7 +24,7 @@ import { EmailService } from 'src/notifications/email.service';
       signOptions: { expiresIn: '15m' },
     }),
   ],
-  providers: [AuthService, AuthResolver, JwtStrategy, VerificationService, EmailService],
+  providers: [AuthService, AuthResolver, JwtStrategy, VerificationService, EmailService, VerifyUserPipe, UsernamePipe, EmailPipe, PasswordPipe, UserBlock],
   controllers: [VerificationController],
   exports: [JwtModule, PassportModule],
 })
