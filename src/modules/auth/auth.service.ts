@@ -146,7 +146,7 @@ export class AuthService {
         const validatedPassword =
             await this.passwordPipe.transform(newPassword);
 
-        if (newPassword !== confirmPassword) {
+        if (validatedPassword !== confirmPassword) {
             throw new UnauthorizedException("Passwords do not match");
         }
 
@@ -156,7 +156,7 @@ export class AuthService {
             throw new UnauthorizedException("User not found");
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const hashedPassword = await bcrypt.hash(validatedPassword, 10);
 
         user.password = hashedPassword;
 
