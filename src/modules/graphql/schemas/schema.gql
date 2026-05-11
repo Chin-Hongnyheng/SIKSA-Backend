@@ -1,42 +1,164 @@
-// data structure
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
 
-input CreateInstructorInput {
+type AssessmentsType {
+  assessmentName: String!
+  courseCode: String!
+  createdAt: DateTime!
+  createdBy: String!
+}
+
+type CoursesType {
+  courseCode: String!
+  courseName: String!
+  createdAt: DateTime!
+  createdBy: String!
+  description: String
+}
+
+input CreateAssessmentInput {
+  assessmentName: String!
+  courseCode: String!
+}
+
+type CreateAssessmentResponse {
+  message: String!
+}
+
+input CreateCourseInput {
+  courseCode: String!
+  courseName: String!
+  description: String
+}
+
+type CreateCourseResponse {
+  message: String!
+}
+
+input CreateForgetInput {
+  confirmPassword: String!
+  email: String!
+  newPassword: String!
+}
+
+input CreateLoginInput {
+  email: String!
+  password: String!
+}
+
+input CreateRegisterInput {
   address: String
+  confirmPassword: String!
   dob: DateTime
   email: String!
   gender: String
-  instructorName: String!
+  language: String! = "ENGLISH"
+  notification: String! = "ON"
   password: String!
-  phone: Int!
+  phone: Float!
   photo_url: String
-  year: Int
+  role: String
+  userName: String!
 }
 
-// data return
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
-type InstructorType {
-  address: String
-  created_at: DateTime!
-  dob: DateTime
-  email: String!
-  gender: String
-  instructorId: ID!
-  instructorName: String!
-  password: String!
-  phone: Int!
-  photo_url: String
-  year: Int
+input DeleteAssessmentInput {
+  assessmentName: String!
+  courseCode: String!
 }
 
-// modify
+type DeleteAssessmentResponse {
+  message: String!
+}
+
+input DeleteCourseInput {
+  courseCode: String!
+}
+
+type DeleteCourseResponse {
+  message: String!
+}
+
+input EditCourseInput {
+  courseCode: String!
+  courseName: String
+  description: String
+  newCourseCode: String
+}
+
+type EditCourseResponse {
+  message: String!
+}
+
+type ForgetResponse {
+  message: String!
+}
+
+type LoginResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
 type Mutation {
-  createInstructor(input: CreateInstructorInput!): InstructorType!
-  deleteInstructor(instructorId: ID!): Boolean!
-  updateInstructor(input: CreateInstructorInput!, instructorId: ID!): InstructorType!
+  createAssessment(input: CreateAssessmentInput!): CreateAssessmentResponse!
+  createCourse(input: CreateCourseInput!): CreateCourseResponse!
+  deleteAssessment(input: DeleteAssessmentInput!): DeleteAssessmentResponse!
+  deleteCourse(input: DeleteCourseInput!): DeleteCourseResponse!
+  editCourse(input: EditCourseInput!): EditCourseResponse!
+  forgetPassword(input: CreateForgetInput!): ForgetResponse!
+  login(input: CreateLoginInput!): LoginResponse!
+  refresh(refreshToken: String!): LoginResponse!
+  register(input: CreateRegisterInput!): RegisterResponse!
+  updateProfile(input: UpdateUserInput!): UpdateResponse!
+  validateLogin(input: CreateLoginInput!): String!
+  validateRegister(input: CreateRegisterInput!): String!
 }
 
-// fetch
 type Query {
-  instructor(instructorId: ID!): InstructorType
-  instructors: [InstructorType!]!
+  getAllCourses: [CoursesType!]!
+  getAllMyAssessments: [AssessmentsType!]!
+  getAssessmentsByCourseCode(courseCode: String!): [AssessmentsType!]!
+  getCourseByCode(courseCode: String!): CoursesType!
+  getMyCourses: [CoursesType!]!
+  me: UserType!
+}
+
+type RegisterResponse {
+  accessToken: String!
+  message: String!
+  refreshToken: String!
+}
+
+type UpdateResponse {
+  message: String!
+  user: UserType!
+}
+
+input UpdateUserInput {
+  address: String
+  dob: DateTime
+  gender: String
+  language: String
+  notification: String
+  photo_url: String
+  userName: String
+}
+
+type UserType {
+  address: String
+  dob: DateTime!
+  email: String!
+  gender: String!
+  id: ID!
+  language: String!
+  notification: String!
+  phone: Float!
+  photo_url: String
+  role: String!
+  userName: String!
 }
