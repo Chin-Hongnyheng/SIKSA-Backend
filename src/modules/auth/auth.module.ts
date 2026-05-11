@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { JwtStrategy } from '../../strategies/jwt-auth.strategy';
-import { User, userSchema } from '../users/users.schema';
+import { User, userSchema } from './users.schema';
 import { VerificationService } from './verification.service';
 import { VerificationController } from './verification.controller';
 import { EmailService } from 'src/notifications/email.service';
@@ -24,8 +24,19 @@ import { UserBlock } from 'src/common/pipe/UserBlock.pipe';
       signOptions: { expiresIn: '15m' },
     }),
   ],
-  providers: [AuthService, AuthResolver, JwtStrategy, VerificationService, EmailService, VerifyUserPipe, UsernamePipe, EmailPipe, PasswordPipe, UserBlock],
+  providers: [
+    AuthService,
+    AuthResolver,
+    JwtStrategy,
+    VerificationService,
+    EmailService,
+    VerifyUserPipe,
+    UsernamePipe,
+    EmailPipe,
+    PasswordPipe,
+    UserBlock,
+  ],
   controllers: [VerificationController],
   exports: [JwtModule, PassportModule],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -7,16 +7,15 @@ export interface UserAttrs {
   email: string;
   phone: number;
   password: string;
-  role?: 'student' | 'teacher' | 'admin';
+  role?: 'Student' | 'Teacher' | 'Admin';
 
   dob?: Date;
-  gender?: 'male' | 'female' | 'other';
+  gender?: 'Male' | 'Female' | 'Other';
   address?: string;
   photo_url?: string;
-  year?: number;
 
   notification?: 'ON' | 'OFF';
-  language?: string;
+  language?: 'ENGLISH' | 'KHMER';
 }
 
 // Store the data
@@ -26,15 +25,14 @@ export interface UserDoc extends mongoose.Document {
   email: string;
   phone: number;
   password: string;
-  role: 'student' | 'teacher' | 'admin';
+  role: 'Student' | 'Teacher' | 'Admin';
   dob?: Date;
-  gender?: 'male' | 'female' | 'other';
+  gender?: 'Male' | 'Female' | 'Other';
   address?: string;
   photo_url?: string;
-  year?: number;
 
   notification?: 'ON' | 'OFF';
-  language?: string;
+  language?: 'ENGLISH' | 'KHMER';
   created_at: Date;
 }
 
@@ -50,18 +48,17 @@ export const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ['student', 'teacher', 'admin'],
-    default: 'student'
+    enum: ['Student', 'Teacher', 'Admin'],
+    default: 'Student',
   },
   dob: { type: Date, default: null },
   gender: { type: String, enum: ['Male', 'Female', 'Other'], default: null },
   address: { type: String, default: null },
   photo_url: { type: String, default: null },
-  year: { type: Number, default: null },
-  notification: { type: String, enum: ['ON', 'OFF'], default: null },
-  language: { type: String, default: null },
+  notification: { type: String, enum: ['ON', 'OFF'], default: 'ON' },
+  language: { type: String, enum: ['ENGLISH', 'KHMER'], default: 'ENGLISH' },
 
-  created_at: { type: Date, default: Date.now }
+  created_at: { type: Date, default: Date.now },
 });
 
 // creates a new User document
@@ -70,7 +67,4 @@ userSchema.statics.build = (attrs: UserAttrs) => {
 };
 
 // creates the User model
-export const User = mongoose.model<UserDoc, UserModel>(
-  'User',
-  userSchema
-);
+export const User = mongoose.model<UserDoc, UserModel>('User', userSchema);

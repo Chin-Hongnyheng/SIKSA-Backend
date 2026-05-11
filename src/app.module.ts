@@ -7,25 +7,28 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { DatabaseModule } from './modules/database/database.module';
 import { CoursesModule } from './modules/courses/courses.module';
-import { UsersModule } from './modules/users/users.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AssessmentsModule } from './modules/assessments/assessments.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/modules/graphql/schemas/schema.gql'),
+      autoSchemaFile: join(
+        process.cwd(),
+        'src/modules/graphql/schemas/schema.gql',
+      ),
       sortSchema: true,
     }),
     DatabaseModule,
     CoursesModule,
-    UsersModule,
     RedisModule,
-    AuthModule
+    AuthModule,
+    AssessmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

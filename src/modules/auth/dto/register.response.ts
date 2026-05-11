@@ -3,11 +3,11 @@ import { ObjectType, Field } from '@nestjs/graphql';
 @ObjectType()
 export class RegisterResponse {
   @Field()
-  message: string;
+  message!: string;
 
   @Field()
-  accessToken: string;
+  accessToken!: string;
 
   @Field()
-  refreshToken: string;
+  refreshToken!: string;
 }

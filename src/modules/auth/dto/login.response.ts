@@ -3,8 +3,8 @@ import { ObjectType, Field } from '@nestjs/graphql';
 @ObjectType()
 export class LoginResponse {
   @Field()
-  accessToken: string;
+  accessToken!: string;
 
   @Field()
-  refreshToken: string;
+  refreshToken!: string;
 }

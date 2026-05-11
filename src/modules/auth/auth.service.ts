@@ -4,166 +4,190 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 
-import { UserDoc } from '../users/users.schema';
-import { CreateLoginInput } from '../users/dto/login.input';
-import { CreateRegisterInput } from '../users/dto/register.input';
-import { CreateForgetInput } from '../users/dto/forget.input';
+import { UserDoc } from './users.schema';
+import { CreateLoginInput } from './dto/login.input';
+import { CreateRegisterInput } from './dto/register.input';
+import { CreateForgetInput } from './dto/forget.input';
 import { PasswordPipe } from 'src/common/pipe/password.pipe';
+import { UpdateUserInput } from './dto/update.input';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        @InjectModel('User') private userModel: Model<UserDoc>,
-        private jwt: JwtService,
-        private passwordPipe: PasswordPipe,
-    ) { }
+  constructor(
+    @InjectModel('User') private userModel: Model<UserDoc>,
+    private jwt: JwtService,
+    private passwordPipe: PasswordPipe,
+  ) {}
 
-    async register(input: CreateRegisterInput) {
-        try {
-            const { userName, email, phone, password, confirmPassword, role } = input;
+  async register(input: CreateRegisterInput) {
+    try {
+      const { userName, email, phone, password, confirmPassword, role } = input;
 
-            if (password !== confirmPassword) {
-                throw new UnauthorizedException("Passwords do not match");
-            }
+      if (password !== confirmPassword) {
+        throw new UnauthorizedException('Passwords do not match');
+      }
 
-            const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-            const user = await this.userModel.create({
-                userName,
-                email,
-                phone,
-                password: hashedPassword,
-                role: role || 'student',
-            });
+      const user = await this.userModel.create({
+        userName,
+        email,
+        phone,
+        password: hashedPassword,
+        role: role || 'Student',
+      });
 
-            // same payload as login
-            const payload = {
-                sub: user._id.toString(),
-                role: user.role,
-                userName: user.userName,
-            };
+      // same payload as login
+      const payload = {
+        sub: user._id.toString(),
+        role: user.role,
+        userName: user.userName,
+      };
 
-            const accessToken = this.jwt.sign(payload, {
-                secret: process.env.JWT_ACCESS_SECRET!,
-                expiresIn: process.env.JWT_ACCESS_EXPIRES as any,
-            });
+      const accessToken = this.jwt.sign(payload, {
+        secret: process.env.JWT_ACCESS_SECRET!,
+        expiresIn: process.env.JWT_ACCESS_EXPIRES as any,
+      });
 
-            const refreshToken = this.jwt.sign(payload, {
-                secret: process.env.JWT_REFRESH_SECRET!,
-                expiresIn: process.env.JWT_REFRESH_EXPIRES as any,
-            });
+      const refreshToken = this.jwt.sign(payload, {
+        secret: process.env.JWT_REFRESH_SECRET!,
+        expiresIn: process.env.JWT_REFRESH_EXPIRES as any,
+      });
 
-            return {
-                message: "User registered successfully",
-                accessToken,
-                refreshToken,
-            };
+      return {
+        message: 'User registered successfully',
+        accessToken,
+        refreshToken,
+      };
+    } catch (error: any) {
+      if (error.code == 11000) {
+        const field = Object.keys(error.keyPattern)[0];
+        throw new UnauthorizedException(`${field} already exists`);
+      }
+      throw error;
+    }
+  }
 
-        } catch (error: any) {
-            if (error.code == 11000) {
-                const field = Object.keys(error.keyPattern)[0];
-                throw new UnauthorizedException(`${field} already exists`);
-            }
-            throw error;
-        }
+  async login(input: CreateLoginInput) {
+    const user = await this.userModel.findOne({
+      email: input.email,
+    });
+
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    const isValid = await bcrypt.compare(input.password, user.password);
+
+    if (!isValid) throw new UnauthorizedException('Invalid credentials');
+
+    const payload = {
+      sub: user._id.toString(),
+      role: user.role,
+      userName: user.userName,
+    };
+
+    const accessToken = this.jwt.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET!,
+      expiresIn: process.env.JWT_ACCESS_EXPIRES as any,
+    });
+
+    const refreshToken = this.jwt.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET!,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES as any,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async validateLogin(input: CreateLoginInput) {
+    const user = await this.userModel.findOne({
+      email: input.email,
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('No user found!');
     }
 
-    async login(input: CreateLoginInput) {
-        const user = await this.userModel.findOne({
-            email: input.email,
-        });
+    const isValid = await bcrypt.compare(input.password, user.password);
 
-        if (!user) throw new UnauthorizedException('Invalid credentials');
-
-        const isValid = await bcrypt.compare(
-            input.password,
-            user.password,
-        );
-
-        if (!isValid)
-            throw new UnauthorizedException('Invalid credentials');
-
-        const payload = {
-            sub: user._id.toString(),
-            role: user.role,
-            userName: user.userName,
-        };
-
-        const accessToken = this.jwt.sign(payload, {
-            secret: process.env.JWT_ACCESS_SECRET!,
-            expiresIn: process.env.JWT_ACCESS_EXPIRES as any,
-        });
-
-        const refreshToken = this.jwt.sign(payload, {
-            secret: process.env.JWT_REFRESH_SECRET!,
-            expiresIn: process.env.JWT_REFRESH_EXPIRES as any,
-        });
-
-        return {
-            accessToken,
-            refreshToken,
-        };
+    if (!isValid) {
+      throw new UnauthorizedException('Incorrect Password');
     }
 
-    async refresh(refreshToken: string) {
-        try {
-            const payload = this.jwt.verify(refreshToken, {
-                secret: process.env.JWT_REFRESH_SECRET!,
-            });
+    return true;
+  }
 
-            const user = await this.userModel.findById(payload.sub);
+  async refresh(refreshToken: string) {
+    try {
+      const payload = this.jwt.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET!,
+      });
 
-            if (!user) throw new UnauthorizedException();
+      const user = await this.userModel.findById(payload.sub);
 
-            const newAccessToken = this.jwt.sign(
-                {
-                    sub: user._id.toString(),
-                    role: user.role,
-                    userName: user.userName,
-                },
-                {
-                    secret: process.env.JWT_ACCESS_SECRET!,
-                    expiresIn: process.env.JWT_ACCESS_EXPIRES as any,
-                },
-            );
+      if (!user) throw new UnauthorizedException();
 
-            return {
-                accessToken: newAccessToken,
-                refreshToken,
-            };
-        } catch {
-            throw new UnauthorizedException('Invalid refresh token');
-        }
+      const newAccessToken = this.jwt.sign(
+        {
+          sub: user._id.toString(),
+          role: user.role,
+          userName: user.userName,
+        },
+        {
+          secret: process.env.JWT_ACCESS_SECRET!,
+          expiresIn: process.env.JWT_ACCESS_EXPIRES as any,
+        },
+      );
+
+      return {
+        accessToken: newAccessToken,
+        refreshToken,
+      };
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  async getMe(userId: string) {
+    return this.userModel.findById(userId).select('-password');
+  }
+
+  async forgetPassword(input: CreateForgetInput) {
+    const { email, newPassword, confirmPassword } = input;
+
+    const validatedPassword = await this.passwordPipe.transform(newPassword);
+
+    if (validatedPassword !== confirmPassword) {
+      throw new UnauthorizedException('Passwords do not match');
     }
 
-    async getMe(userId: string) {
-        return this.userModel.findById(userId).select('-password');
+    const user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
     }
 
-    async forgetPassword(input: CreateForgetInput) {
-        const { email, newPassword, confirmPassword } = input;
+    const hashedPassword = await bcrypt.hash(validatedPassword, 10);
 
-        const validatedPassword =
-            await this.passwordPipe.transform(newPassword);
+    user.password = hashedPassword;
 
-        if (validatedPassword !== confirmPassword) {
-            throw new UnauthorizedException("Passwords do not match");
-        }
+    await user.save();
 
-        const user = await this.userModel.findOne({ email });
+    return {
+      message: 'Password reset successfully',
+    };
+  }
 
-        if (!user) {
-            throw new UnauthorizedException("User not found");
-        }
+  async updateProfile(userId: string, input: UpdateUserInput) {
+    const user = await this.userModel.findById(userId);
 
-        const hashedPassword = await bcrypt.hash(validatedPassword, 10);
+    if (!user) throw new UnauthorizedException('User not found');
 
-        user.password = hashedPassword;
+    Object.assign(user, input);
+    await user.save();
 
-        await user.save();
-
-        return {
-            message: "Password reset successfully",
-        };
-    }
+    return user;
+  }
 }

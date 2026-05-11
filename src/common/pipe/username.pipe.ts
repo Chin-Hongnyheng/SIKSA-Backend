@@ -1,18 +1,14 @@
-import {
-  Injectable,
-  PipeTransform,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDoc } from '../../modules/users/users.schema';
+import { UserDoc } from '../../modules/auth/users.schema';
 
 @Injectable()
 export class UsernamePipe implements PipeTransform {
   constructor(
     @InjectModel('User')
     private readonly userModel: Model<UserDoc>,
-  ) { }
+  ) {}
 
   async transform(value: any) {
     if (typeof value !== 'string') {

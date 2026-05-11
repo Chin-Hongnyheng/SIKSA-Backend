@@ -4,26 +4,31 @@ import { UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
-import { CreateLoginInput } from '../users/dto/login.input';
-import { CreateRegisterInput } from '../users/dto/register.input';
-import { CreateForgetInput } from '../users/dto/forget.input';
-import { ForgetResponse } from '../users/dto/forget.response';
-import { LoginResponse } from '../users/dto/login.response';
-import { RegisterResponse } from '../users/dto/register.response';
-import { UserType } from '../users/dto/users.type';
+import { CreateLoginInput } from './dto/login.input';
+import { CreateRegisterInput } from './dto/register.input';
+import { CreateForgetInput } from './dto/forget.input';
+import { ForgetResponse } from './dto/forget.response';
+import { LoginResponse } from './dto/login.response';
+import { RegisterResponse } from './dto/register.response';
+import { UserType } from './dto/users.type';
 import { VerifyUserPipe } from '../../common/pipe/user-verification.pipe';
+import { UpdateUserInput } from './dto/update.input';
+import { UpdateResponse } from './dto/update.response';
 
 @Resolver()
 export class AuthResolver {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Mutation(() => String)
-  validateRegister(
-    @Args('input', VerifyUserPipe) input: CreateRegisterInput,
-  ) {
-    return 'validation success';
+  validateRegister(@Args('input', VerifyUserPipe) input: CreateRegisterInput) {
+    return 'validation register success';
   }
 
+  @Mutation(() => String)
+  async validateLogin(@Args('input') input: CreateLoginInput) {
+    await this.authService.validateLogin(input);
+    return 'validation login success';
+  }
 
   @Mutation(() => RegisterResponse)
   register(@Args('input', VerifyUserPipe) input: CreateRegisterInput) {
@@ -55,5 +60,21 @@ export class AuthResolver {
     }
 
     return this.authService.getMe(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => UpdateResponse)
+  async updateProfile(
+    @Context() ctx: any,
+    @Args('input') input: UpdateUserInput,
+  ) {
+    const userId = ctx.req.user?.userId;
+
+    const user = await this.authService.updateProfile(userId, input);
+
+    return {
+      message: 'Profile updated successfully',
+      user,
+    };
   }
 }
