@@ -29,13 +29,13 @@ export class AuthService {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const user = await this.userModel.create({
+      const user = (await this.userModel.create({
         userName,
         email,
         phone,
         password: hashedPassword,
-        role: role || 'Student',
-      });
+        role: (role as any) || 'Student',
+      })) as any;
 
       // same payload as login
       const payload = {

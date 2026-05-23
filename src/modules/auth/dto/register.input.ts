@@ -18,7 +18,7 @@ export class CreateRegisterInput {
   confirmPassword!: string;
 
   @Field({ nullable: true })
-  role?: string;
+  role?: 'Student' | 'Teacher' | 'Admin';
 
   @Field({ nullable: true })
   dob?: Date;
