@@ -17,16 +17,16 @@ export class UserType {
   @Field()
   role!: string;
 
-  @Field()
-  dob!: Date;
+  @Field(() => Date, { nullable: true })
+  dob?: Date;
 
-  @Field()
-  gender!: string;
+  @Field(() => String, { nullable: true })
+  gender?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   address?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   photo_url?: string;
 
   @Field()

@@ -21,7 +21,6 @@ import { UserBlock } from 'src/common/pipe/UserBlock.pipe';
     MongooseModule.forFeature([{ name: 'User', schema: userSchema }]),
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
-      signOptions: { expiresIn: '15m' },
     }),
   ],
   providers: [

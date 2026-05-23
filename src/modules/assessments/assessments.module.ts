@@ -15,7 +15,6 @@ import { courseSchema } from '../courses/courses.schema';
     ]),
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
-      signOptions: { expiresIn: '15m' },
     }),
   ],
   providers: [AssessmentsResolver, AssessmentsService, JwtStrategy],

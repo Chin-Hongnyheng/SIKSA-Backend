@@ -181,7 +181,21 @@ export class AuthService {
   }
 
   async updateProfile(userId: string, input: UpdateUserInput) {
-    const user = await this.userModel.findById(userId);
+    console.log('Updated input:', input); // Debug log to check the input
+
+    // check username duplication
+    if (input.userName) {
+      const existingUser = await this.userModel.findOne({
+        userName: input.userName,
+        _id: { $ne: userId },
+      });
+
+      if (existingUser) {
+        throw new UnauthorizedException('Username already exists');
+      }
+    }
+
+    let user = await this.userModel.findById(userId);
 
     if (!user) throw new UnauthorizedException('User not found');
 

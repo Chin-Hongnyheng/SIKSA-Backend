@@ -52,7 +52,11 @@ export const userSchema = new mongoose.Schema({
     default: 'Student',
   },
   dob: { type: Date, default: null },
-  gender: { type: String, enum: ['Male', 'Female', 'Other'], default: null },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female', 'Other', null, ''],
+    default: null,
+  },
   address: { type: String, default: null },
   photo_url: { type: String, default: null },
   notification: { type: String, enum: ['ON', 'OFF'], default: 'ON' },
