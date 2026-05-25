@@ -1,15 +1,16 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import mongoose from 'mongoose';
-import { ConfigService } from '@nestjs/config';
+import { InjectConnection } from '@nestjs/mongoose';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Connection } from 'mongoose';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
-  constructor(private readonly configService: ConfigService) {}
+  private readonly logger = new Logger(DatabaseService.name);
 
-  async onModuleInit() {
-    const uri = this.configService.get<string>('MONGO_URI')!;
-    const dbName = this.configService.get<string>('MONGO_DB')!;
-    await mongoose.connect(uri, { dbName });
-    console.log('Connected to MongoDB');
+  constructor(@InjectConnection() private readonly connection: Connection) {}
+
+  onModuleInit() {
+    if (this.connection.readyState === 1) {
+      this.logger.log(`Connected to MongoDB (${this.connection.name})`);
+    }
   }
 }

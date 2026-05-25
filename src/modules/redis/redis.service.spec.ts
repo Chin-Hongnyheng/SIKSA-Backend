@@ -6,7 +6,16 @@ describe('RedisService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RedisService],
+      providers: [
+        RedisService,
+        {
+          provide: 'REDIS_OPTIONS',
+          useValue: {
+            host: 'localhost',
+            port: 6379,
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<RedisService>(RedisService);
