@@ -11,6 +11,7 @@ import { RedisModule } from './modules/redis/redis.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AssessmentsModule } from './modules/assessments/assessments.module';
 import { SchedulesModule } from './modules/schedules/schedules.module';
+import { AttendanceModule } from './modules/attendance/attendance.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SchedulesModule } from './modules/schedules/schedules.module';
     AuthModule,
     AssessmentsModule,
     SchedulesModule,
+    AttendanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
