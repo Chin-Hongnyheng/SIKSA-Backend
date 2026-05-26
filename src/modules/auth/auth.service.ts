@@ -69,8 +69,10 @@ export class AuthService {
   }
 
   async login(input: CreateLoginInput) {
+    const email = input.email.trim().toLowerCase();
+
     const user = await this.userModel.findOne({
-      email: input.email,
+      email,
     });
 
     if (!user) throw new UnauthorizedException('Invalid credentials');
@@ -102,8 +104,10 @@ export class AuthService {
   }
 
   async validateLogin(input: CreateLoginInput) {
+    const email = input.email.trim().toLowerCase();
+
     const user = await this.userModel.findOne({
-      email: input.email,
+      email,
     });
 
     if (!user) {

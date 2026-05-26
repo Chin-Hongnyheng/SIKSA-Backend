@@ -13,6 +13,7 @@ import { UsernamePipe } from 'src/common/pipe/username.pipe';
 import { EmailPipe } from 'src/common/pipe/email.pipe';
 import { PasswordPipe } from 'src/common/pipe/password.pipe';
 import { UserBlock } from 'src/common/pipe/UserBlock.pipe';
+import { EmailService } from '../../notifications/email.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UserBlock } from 'src/common/pipe/UserBlock.pipe';
     EmailPipe,
     PasswordPipe,
     UserBlock,
+    EmailService,
   ],
   controllers: [VerificationController],
   exports: [JwtModule, PassportModule],
