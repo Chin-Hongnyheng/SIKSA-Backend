@@ -30,7 +30,7 @@ export class SchedulesResolver {
   constructor(private readonly schedulesService: SchedulesService) {}
 
   @Roles('Teacher', 'Admin')
-  @Permissions('course:create')
+  @Permissions('schedule:create')
   @Mutation(() => CreateScheduleResponse)
   createSchedule(
     @Args('input') input: CreateScheduleInput,
@@ -41,22 +41,21 @@ export class SchedulesResolver {
   }
 
   @Roles('Teacher', 'Admin')
-  @Permissions('course:edit')
+  @Permissions('schedule:edit')
   @Mutation(() => EditScheduleResponse)
   editSchedule(@Args('input') input: EditScheduleInput) {
     return this.schedulesService.editSchedule(input);
   }
 
   @Roles('Teacher', 'Admin')
-  @Permissions('course:delete')
+  @Permissions('schedule:delete')
   @Mutation(() => DeleteScheduleResponse)
   deleteSchedule(@Args('input') input: DeleteScheduleInput) {
     return this.schedulesService.deleteSchedule(input);
   }
 
-  // all roles can view schedules
   @Roles('Student', 'Teacher', 'Admin')
-  @Permissions('course:view')
+  @Permissions('schedule:view')
   @Query(() => [Schedule])
   getAllSchedules() {
     return this.schedulesService.getAllSchedules();
@@ -64,7 +63,7 @@ export class SchedulesResolver {
 
   // get schedules under a specific course
   @Roles('Student', 'Teacher', 'Admin')
-  @Permissions('course:view')
+  @Permissions('schedule:view')
   @Query(() => [Schedule])
   getSchedulesByCourse(@Args('courseCode') courseCode: string) {
     return this.schedulesService.getSchedulesByCourse(courseCode);
@@ -72,7 +71,7 @@ export class SchedulesResolver {
 
   // get schedules created by logged-in user
   @Roles('Teacher', 'Admin')
-  @Permissions('course:view')
+  @Permissions('schedule:view')
   @Query(() => [Schedule])
   getMySchedules(@Context() context: any) {
     const userId = extractUserId(context);

@@ -9,6 +9,10 @@ export const ROLE_PERMISSIONS = {
     'assessment:edit',
     'assessment:delete',
     'assessment:view',
+    'schedule:view',
+    'schedule:create',
+    'schedule:edit',
+    'schedule:delete',
   ],
   Admin: ['*'],
 } as const;

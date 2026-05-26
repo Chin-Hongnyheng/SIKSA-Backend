@@ -20,7 +20,10 @@ export class AuthResolver {
   constructor(private authService: AuthService) {}
 
   @Mutation(() => String)
-  validateRegister(@Args('input', VerifyUserPipe) input: CreateRegisterInput) {
+  async validateRegister(
+    @Args('input', VerifyUserPipe) input: CreateRegisterInput,
+  ) {
+    await this.authService.validateRegister(input);
     return 'validation register success';
   }
 
