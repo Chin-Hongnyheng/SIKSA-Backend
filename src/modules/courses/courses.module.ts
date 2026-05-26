@@ -11,7 +11,6 @@ import { JwtStrategy } from 'src/strategies/jwt-auth.strategy';
     MongooseModule.forFeature([{ name: 'Course', schema: courseSchema }]),
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
-      signOptions: { expiresIn: '15m' },
     }),
   ],
   providers: [CoursesService, CoursesResolver, JwtStrategy],

@@ -21,7 +21,6 @@ import { EmailService } from '../../notifications/email.service';
     MongooseModule.forFeature([{ name: 'User', schema: userSchema }]),
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
-      signOptions: { expiresIn: '15m' },
     }),
   ],
   providers: [

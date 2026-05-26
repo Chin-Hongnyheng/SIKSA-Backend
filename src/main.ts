@@ -21,6 +21,7 @@ async function bootstrap() {
   const { AppModule } = await import('./app.module.js');
   const app = await NestFactory.create(AppModule);
 
+<<<<<<< HEAD
   app.enableCors({
     origin: true,
     credentials: true,
@@ -30,3 +31,10 @@ async function bootstrap() {
 }
 
 bootstrap();
+=======
+  app.enableCors();
+
+  await app.listen(3000, '0.0.0.0');
+}
+bootstrap();
+>>>>>>> origin/Phirum

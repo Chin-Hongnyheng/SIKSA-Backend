@@ -11,10 +11,10 @@ import { DatabaseService } from './database.service';
       useFactory: (configService: ConfigService) => {
         const uri = configService.get<string>('MONGO_URI');
         const dbName = configService.get<string>('MONGO_DB');
-        
+
         return {
           uri,
-          dbName,
+          ...(dbName ? { dbName } : {}),
         };
       },
     }),

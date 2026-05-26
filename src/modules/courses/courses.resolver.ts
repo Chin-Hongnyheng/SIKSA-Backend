@@ -72,7 +72,7 @@ export class CoursesResolver {
   @Permissions('course:view')
   @Query(() => [CoursesType])
   getMyCourses(@Context() context: any) {
-    const userId = context?.req?.user?.userId;
+    const userId = extractUserId(context);
     return this.coursesService.getMyCourses(userId);
   }
 }

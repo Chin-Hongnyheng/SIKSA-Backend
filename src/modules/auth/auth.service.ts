@@ -185,7 +185,21 @@ export class AuthService {
   }
 
   async updateProfile(userId: string, input: UpdateUserInput) {
-    const user = await this.userModel.findById(userId);
+    console.log('Updated input:', input); // Debug log to check the input
+
+    // check username duplication
+    if (input.userName) {
+      const existingUser = await this.userModel.findOne({
+        userName: input.userName,
+        _id: { $ne: userId },
+      });
+
+      if (existingUser) {
+        throw new UnauthorizedException('Username already exists');
+      }
+    }
+
+    let user = await this.userModel.findById(userId);
 
     if (!user) throw new UnauthorizedException('User not found');
 
@@ -193,5 +207,34 @@ export class AuthService {
     await user.save();
 
     return user;
+  }
+
+  async validateRegister(input: CreateRegisterInput) {
+    const { userName, email, phone, password, confirmPassword } = input;
+
+    // Check password match
+    if (password !== confirmPassword) {
+      throw new UnauthorizedException('Passwords do not match');
+    }
+
+    // Check username exists
+    const existingUserName = await this.userModel.findOne({ userName });
+    if (existingUserName) {
+      throw new UnauthorizedException('Username already exists');
+    }
+
+    // Check email exists
+    const existingEmail = await this.userModel.findOne({ email });
+    if (existingEmail) {
+      throw new UnauthorizedException('Email already exists');
+    }
+
+    // Check phone exists
+    const existingPhone = await this.userModel.findOne({ phone });
+    if (existingPhone) {
+      throw new UnauthorizedException('Phone number already exists');
+    }
+
+    return true;
   }
 }

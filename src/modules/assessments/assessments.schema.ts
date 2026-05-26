@@ -18,7 +18,7 @@ export interface AssessmentModel extends mongoose.Model<AssessmentDoc> {
 }
 
 export const assessmentSchema = new mongoose.Schema({
-  assessmentName: { type: String, required: true, unique: true },
+  assessmentName: { type: String, required: true },
   course: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
@@ -35,6 +35,8 @@ export const assessmentSchema = new mongoose.Schema({
 assessmentSchema.statics.build = (attrs: AssessmentAttrs) => {
   return new Assessment(attrs);
 };
+
+assessmentSchema.index({ assessmentName: 1, course: 1 }, { unique: true });
 
 export const Assessment = mongoose.model<AssessmentDoc, AssessmentModel>(
   'Assessment',
