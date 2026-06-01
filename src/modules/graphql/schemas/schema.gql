@@ -44,12 +44,21 @@ type AttendanceSummary {
   permission: Int!
 }
 
+type CourseSubscriberType {
+  email: String!
+  id: String!
+  userName: String!
+}
+
 type CoursesType {
   courseCode: String!
   courseName: String!
   createdAt: DateTime!
   createdBy: String!
   description: String
+  isSubscribed: Boolean!
+  subscriberCount: Int!
+  subscribers: [CourseSubscriberType!]!
 }
 
 input CreateAssessmentInput {
@@ -227,6 +236,7 @@ type Mutation {
   refresh(refreshToken: String!): LoginResponse!
   refreshAttendanceSessionPassword(sessionId: String!): AttendanceSession!
   register(input: CreateRegisterInput!): RegisterResponse!
+  subscribeCourse(courseCode: String!): CreateCourseResponse!
   updateProfile(input: UpdateUserInput!): UpdateResponse!
   validateLogin(input: CreateLoginInput!): String!
   validateRegister(input: CreateRegisterInput!): String!
@@ -241,8 +251,10 @@ type Query {
   getAllSchedules: [Schedule!]!
   getAssessmentsByCourseCode(courseCode: String!): [AssessmentsType!]!
   getCourseByCode(courseCode: String!): CoursesType!
+  getCourseSubscribers(courseCode: String!): [CourseSubscriberType!]!
   getMyCourses: [CoursesType!]!
   getMySchedules: [Schedule!]!
+  getMyTotalStudents: Int!
   getSchedulesByCourse(courseCode: String!): [Schedule!]!
   me: UserType!
   sessionAttendance(sessionId: String!): [Attendance!]!
