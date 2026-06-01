@@ -12,14 +12,15 @@ import { DeleteAssessmentInput } from './dto/deleteAssessment.input';
 import { DeleteAssessmentResponse } from './dto/deleteAssessment.response';
 import { AssessmentsType } from './dto/assessments.type';
 
-function extractUserId(context: any): string {
-  const userId = context?.req?.user?.userId;
+function extractUser(context: any): { userId: string; role: string } {
+  const user = context?.req?.user;
+  const userId = user?.userId;
   if (!userId) {
     throw new ForbiddenException(
       'You must be logged in to perform this action',
     );
   }
-  return userId;
+  return { userId, role: user?.role ?? '' };
 }
 
 @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
@@ -34,29 +35,41 @@ export class AssessmentsResolver {
     @Args('input') input: CreateAssessmentInput,
     @Context() context: any,
   ) {
-    const userId = extractUserId(context);
+    const { userId } = extractUser(context);
     return this.assessmentService.createAssessment(input, userId);
   }
 
   @Roles('Teacher', 'Admin')
   @Permissions('assessment:delete')
   @Mutation(() => DeleteAssessmentResponse)
-  deleteAssessment(@Args('input') input: DeleteAssessmentInput) {
-    return this.assessmentService.deleteAssessment(input);
+  deleteAssessment(
+    @Args('input') input: DeleteAssessmentInput,
+    @Context() context: any,
+  ) {
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.deleteAssessment(input, userId, role);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('Student', 'Teacher', 'Admin')
   @Permissions('assessment:view')
   @Query(() => [AssessmentsType])
-  getAssessmentsByCourseCode(@Args('courseCode') courseCode: string) {
-    return this.assessmentService.getAssessmentsByCourseCode(courseCode);
+  getAssessmentsByCourseCode(
+    @Args('courseCode') courseCode: string,
+    @Context() context: any,
+  ) {
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.getAssessmentsByCourseCode(
+      courseCode,
+      userId,
+      role,
+    );
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('Student', 'Teacher', 'Admin')
   @Permissions('assessment:view')
   @Query(() => [AssessmentsType])
   getAllMyAssessments(@Context() context: any) {
-    const userId = extractUserId(context);
-    return this.assessmentService.getAllMyAssessments(userId);
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.getAllMyAssessments(userId, role);
   }
 }

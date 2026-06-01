@@ -1,5 +1,5 @@
 export const ROLE_PERMISSIONS = {
-  Student: ['course:view'],
+  Student: ['course:view', 'course:subscribe', 'assessment:view'],
   Teacher: [
     'course:view',
     'course:create',

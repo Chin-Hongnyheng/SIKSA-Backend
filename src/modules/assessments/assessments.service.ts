@@ -55,7 +55,11 @@ export class AssessmentsService {
     return { message: 'Assessment created successfully' };
   }
 
-  async deleteAssessment(input: DeleteAssessmentInput) {
+  async deleteAssessment(
+    input: DeleteAssessmentInput,
+    userId: string,
+    role: string,
+  ) {
     const course = await this.courseModel.findOne({
       courseCode: input.courseCode,
     });
@@ -63,11 +67,16 @@ export class AssessmentsService {
       throw new Error(`Course with code "${input.courseCode}" not found`);
     }
 
-    // Delete it
-    const deleted = await this.assessmentModel.findOneAndDelete({
+    const filter: Record<string, any> = {
       course: course._id,
       assessmentName: input.assessmentName,
-    });
+    };
+
+    if (role !== 'Admin') {
+      filter.created_by = userId;
+    }
+
+    const deleted = await this.assessmentModel.findOneAndDelete(filter);
 
     if (!deleted) {
       throw new Error(
@@ -78,14 +87,24 @@ export class AssessmentsService {
     return { message: 'Assessment deleted successfully' };
   }
 
-  async getAssessmentsByCourseCode(courseCode: string) {
+  async getAssessmentsByCourseCode(
+    courseCode: string,
+    userId: string,
+    role: string,
+  ) {
     const course = await this.courseModel.findOne({ courseCode });
     if (!course) {
       throw new NotFoundException(`Course with code "${courseCode}" not found`);
     }
 
+    const filter: Record<string, any> = { course: course._id };
+
+    if (role === 'Teacher') {
+      filter.created_by = userId;
+    }
+
     const assessments = await this.assessmentModel
-      .find({ course: course._id })
+      .find(filter)
       .sort({ created_at: -1 })
       .exec();
 
@@ -93,9 +112,15 @@ export class AssessmentsService {
     return assessments.map((a) => this.mapAssessment(a, courseCode));
   }
 
-  async getAllMyAssessments(userId: string) {
+  async getAllMyAssessments(userId: string, role: string) {
+    const filter: Record<string, any> = {};
+
+    if (role === 'Teacher') {
+      filter.created_by = userId;
+    }
+
     const assessments = await this.assessmentModel
-      .find({ created_by: userId })
+      .find(filter)
       .populate('course', 'courseCode')
       .sort({ created_at: -1 })
       .exec();

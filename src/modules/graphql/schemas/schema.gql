@@ -50,6 +50,9 @@ type CoursesType {
   createdAt: DateTime!
   createdBy: String!
   description: String
+  isSubscribed: Boolean!
+  subscriberCount: Int!
+  subscribers: [CourseSubscriberType!]!
 }
 
 input CreateAssessmentInput {
@@ -212,7 +215,9 @@ type Mutation {
   checkOut(studentId: String!, time: String!): Attendance!
   closeAttendanceSession(sessionId: String!): AttendanceSession!
   createAssessment(input: CreateAssessmentInput!): CreateAssessmentResponse!
-  createAttendanceSession(input: CreateAttendanceSessionInput!): AttendanceSession!
+  createAttendanceSession(
+    input: CreateAttendanceSessionInput!
+  ): AttendanceSession!
   createCourse(input: CreateCourseInput!): CreateCourseResponse!
   createSchedule(input: CreateScheduleInput!): CreateScheduleResponse!
   deleteAssessment(input: DeleteAssessmentInput!): DeleteAssessmentResponse!
@@ -227,6 +232,7 @@ type Mutation {
   refresh(refreshToken: String!): LoginResponse!
   refreshAttendanceSessionPassword(sessionId: String!): AttendanceSession!
   register(input: CreateRegisterInput!): RegisterResponse!
+  subscribeCourse(courseCode: String!): CreateCourseResponse!
   updateProfile(input: UpdateUserInput!): UpdateResponse!
   validateLogin(input: CreateLoginInput!): String!
   validateRegister(input: CreateRegisterInput!): String!
@@ -241,14 +247,19 @@ type Query {
   getAllSchedules: [Schedule!]!
   getAssessmentsByCourseCode(courseCode: String!): [AssessmentsType!]!
   getCourseByCode(courseCode: String!): CoursesType!
+  getCourseSubscribers(courseCode: String!): [CourseSubscriberType!]!
   getMyCourses: [CoursesType!]!
   getMySchedules: [Schedule!]!
+  getMyTotalStudents: Int!
   getSchedulesByCourse(courseCode: String!): [Schedule!]!
   me: UserType!
   sessionAttendance(sessionId: String!): [Attendance!]!
   studentAttendance(studentId: String!): [Attendance!]!
   studentAttendanceSummary(studentId: String!): AttendanceSummary!
-  verifyAttendanceSessionPassword(password: String!, sessionId: String!): Boolean!
+  verifyAttendanceSessionPassword(
+    password: String!
+    sessionId: String!
+  ): Boolean!
 }
 
 type RegisterResponse {

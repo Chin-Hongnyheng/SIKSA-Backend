@@ -12,6 +12,7 @@ export interface CourseDoc extends mongoose.Document {
   courseCode: string;
   description?: string;
   created_by: mongoose.Types.ObjectId;
+  subscribers: mongoose.Types.ObjectId[];
   created_at: Date;
 }
 
@@ -28,6 +29,13 @@ export const courseSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  subscribers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: [],
+    },
+  ],
   created_at: { type: Date, default: Date.now },
 });
 

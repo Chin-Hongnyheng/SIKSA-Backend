@@ -8,12 +8,12 @@ import { JwtStrategy } from '../../strategies/jwt-auth.strategy';
 import { User, userSchema } from './users.schema';
 import { VerificationService } from './verification.service';
 import { VerificationController } from './verification.controller';
-import { EmailService } from 'src/notifications/email.service';
 import { VerifyUserPipe } from 'src/common/pipe/user-verification.pipe';
 import { UsernamePipe } from 'src/common/pipe/username.pipe';
 import { EmailPipe } from 'src/common/pipe/email.pipe';
 import { PasswordPipe } from 'src/common/pipe/password.pipe';
 import { UserBlock } from 'src/common/pipe/UserBlock.pipe';
+import { EmailService } from '../../notifications/email.service';
 
 @Module({
   imports: [
@@ -28,12 +28,12 @@ import { UserBlock } from 'src/common/pipe/UserBlock.pipe';
     AuthResolver,
     JwtStrategy,
     VerificationService,
-    EmailService,
     VerifyUserPipe,
     UsernamePipe,
     EmailPipe,
     PasswordPipe,
     UserBlock,
+    EmailService,
   ],
   controllers: [VerificationController],
   exports: [JwtModule, PassportModule],
