@@ -17,8 +17,8 @@ export class CreateAttendanceSessionInput {
   @Field(() => String)
   startTime!: string;
 
-  @Field(() => String, { nullable: true })
-  endTime?: string | null;
+  @Field(() => String)
+  endTime!: string;
 
   @Field(() => Int, { nullable: true })
   passwordRefreshSeconds?: number;
