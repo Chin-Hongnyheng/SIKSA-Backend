@@ -29,13 +29,13 @@ export class AuthService {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const user = await this.userModel.create({
+      const user = (await this.userModel.create({
         userName,
         email,
         phone,
         password: hashedPassword,
-        role: role || 'Student',
-      });
+        role: (role as any) || 'Student',
+      })) as any;
 
       // same payload as login
       const payload = {
@@ -69,8 +69,10 @@ export class AuthService {
   }
 
   async login(input: CreateLoginInput) {
+    const email = input.email.trim().toLowerCase();
+
     const user = await this.userModel.findOne({
-      email: input.email,
+      email,
     });
 
     if (!user) throw new UnauthorizedException('Invalid credentials');
@@ -102,8 +104,10 @@ export class AuthService {
   }
 
   async validateLogin(input: CreateLoginInput) {
+    const email = input.email.trim().toLowerCase();
+
     const user = await this.userModel.findOne({
-      email: input.email,
+      email,
     });
 
     if (!user) {
