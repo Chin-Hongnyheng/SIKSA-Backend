@@ -9,6 +9,19 @@ type AssessmentsType {
   createdBy: String!
 }
 
+type Attendance {
+  checkIn: String
+  checkOut: String
+  courseId: String
+  date: String
+  id: ID
+  sessionId: String
+  status: String
+  studentId: String!
+  time: DateTime
+  type: String
+}
+
 type AttendanceSession {
   courseId: String!
   date: String!
@@ -22,6 +35,13 @@ type AttendanceSession {
   startTime: String!
   teacherId: String!
   title: String!
+}
+
+type AttendanceSummary {
+  absent: Int!
+  late: Int!
+  permission: Int!
+  present: Int!
 }
 
 type CoursesType {
@@ -177,6 +197,16 @@ type LoginResponse {
   refreshToken: String!
 }
 
+input MarkAttendanceInput {
+  checkIn: String
+  checkOut: String
+  courseId: String!
+  date: String!
+  sessionId: String
+  status: String!
+  studentId: String!
+}
+
 type Mutation {
   closeAttendanceSession(sessionId: String!): AttendanceSession!
   createAssessment(input: CreateAssessmentInput!): CreateAssessmentResponse!
@@ -184,12 +214,14 @@ type Mutation {
   createCourse(input: CreateCourseInput!): CreateCourseResponse!
   createSchedule(input: CreateScheduleInput!): CreateScheduleResponse!
   deleteAssessment(input: DeleteAssessmentInput!): DeleteAssessmentResponse!
+  deleteAttendanceSession(sessionId: String!): Boolean!
   deleteCourse(input: DeleteCourseInput!): DeleteCourseResponse!
   deleteSchedule(input: DeleteScheduleInput!): DeleteScheduleResponse!
   editCourse(input: EditCourseInput!): EditCourseResponse!
   editSchedule(input: EditScheduleInput!): EditScheduleResponse!
   forgetPassword(input: CreateForgetInput!): ForgetResponse!
   login(input: CreateLoginInput!): LoginResponse!
+  markAttendance(input: MarkAttendanceInput!): Attendance!
   refresh(refreshToken: String!): LoginResponse!
   refreshAttendanceSessionPassword(sessionId: String!): AttendanceSession!
   register(input: CreateRegisterInput!): RegisterResponse!
@@ -201,6 +233,7 @@ type Mutation {
 type Query {
   activeAttendanceSessionsByCourse(courseId: String!): [AttendanceSession!]!
   attendanceSessionsByCourse(courseId: String!): [AttendanceSession!]!
+  courseAttendance(courseId: String!): [Attendance!]!
   getAllCourses: [CoursesType!]!
   getAllMyAssessments: [AssessmentsType!]!
   getAllSchedules: [Schedule!]!
@@ -210,6 +243,9 @@ type Query {
   getMySchedules: [Schedule!]!
   getSchedulesByCourse(courseCode: String!): [Schedule!]!
   me: UserType!
+  sessionAttendance(sessionId: String!): [Attendance!]!
+  studentAttendance(studentId: String!): [Attendance!]!
+  studentAttendanceSummary(studentId: String!): AttendanceSummary!
   verifyAttendanceSessionPassword(password: String!, sessionId: String!): Boolean!
 }
 

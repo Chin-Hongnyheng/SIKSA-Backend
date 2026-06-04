@@ -13,6 +13,54 @@ import { AttendanceSummary } from './dto/attendance-summary.type';
 export class AttendanceResolver {
   constructor(private readonly attendanceService: AttendanceService) {}
 
+  // =========================
+  // ATTENDANCE RECORD QUERIES
+  // =========================
+
+  @Query(() => [Attendance])
+  studentAttendance(
+    @Args('studentId', { type: () => String }) studentId: string,
+  ) {
+    return this.attendanceService.getStudentAttendance(studentId);
+  }
+
+  @Query(() => [Attendance])
+  courseAttendance(
+    @Args('courseId', { type: () => String }) courseId: string,
+  ) {
+    return this.attendanceService.getCourseAttendance(courseId);
+  }
+
+  @Query(() => [Attendance])
+  sessionAttendance(
+    @Args('sessionId', { type: () => String }) sessionId: string,
+  ) {
+    return this.attendanceService.getSessionAttendance(sessionId);
+  }
+
+  @Query(() => AttendanceSummary)
+  studentAttendanceSummary(
+    @Args('studentId', { type: () => String }) studentId: string,
+  ) {
+    return this.attendanceService.getStudentSummary(studentId);
+  }
+
+  // =========================
+  // ATTENDANCE RECORD MUTATION
+  // =========================
+
+  @Mutation(() => Attendance)
+  markAttendance(
+    @Args('input', { type: () => MarkAttendanceInput })
+    input: MarkAttendanceInput,
+  ) {
+    return this.attendanceService.markAttendance(input);
+  }
+
+  // =========================
+  // ATTENDANCE SESSION MUTATIONS
+  // =========================
+
   @Mutation(() => AttendanceSession)
   createAttendanceSession(
     @Args('input', { type: () => CreateAttendanceSessionInput })
@@ -28,6 +76,24 @@ export class AttendanceResolver {
     return this.attendanceService.refreshAttendanceSessionPassword(sessionId);
   }
 
+  @Mutation(() => AttendanceSession)
+  closeAttendanceSession(
+    @Args('sessionId', { type: () => String }) sessionId: string,
+  ) {
+    return this.attendanceService.closeAttendanceSession(sessionId);
+  }
+
+  @Mutation(() => Boolean)
+  deleteAttendanceSession(
+    @Args('sessionId', { type: () => String }) sessionId: string,
+  ) {
+    return this.attendanceService.deleteAttendanceSession(sessionId);
+  }
+
+  // =========================
+  // ATTENDANCE SESSION QUERIES
+  // =========================
+
   @Query(() => [AttendanceSession])
   attendanceSessionsByCourse(
     @Args('courseId', { type: () => String }) courseId: string,
@@ -40,13 +106,6 @@ export class AttendanceResolver {
     @Args('courseId', { type: () => String }) courseId: string,
   ) {
     return this.attendanceService.getActiveAttendanceSessionsByCourse(courseId);
-  }
-
-  @Mutation(() => AttendanceSession)
-  closeAttendanceSession(
-    @Args('sessionId', { type: () => String }) sessionId: string,
-  ) {
-    return this.attendanceService.closeAttendanceSession(sessionId);
   }
 
   @Query(() => Boolean)

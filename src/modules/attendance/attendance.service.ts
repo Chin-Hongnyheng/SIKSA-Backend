@@ -265,4 +265,16 @@ export class AttendanceService {
 
     return session.password === password;
   }
+
+  async deleteAttendanceSession(sessionId: string): Promise<boolean> {
+    // Delete all attendance records linked to this session first
+    await this.attendanceModel.deleteMany({ sessionId }).exec();
+
+    // Delete the attendance session itself
+    const result = await this.attendanceSessionModel
+      .deleteOne({ _id: sessionId })
+      .exec();
+
+    return result.deletedCount > 0;
+  }
 }
