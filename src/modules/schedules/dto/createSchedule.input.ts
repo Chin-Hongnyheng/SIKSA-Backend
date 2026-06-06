@@ -6,9 +6,6 @@ export class CreateScheduleInput {
   courseCode!: string;
 
   @Field()
-  assessmentName!: string;
-
-  @Field()
   location!: string;
 
   @Field()

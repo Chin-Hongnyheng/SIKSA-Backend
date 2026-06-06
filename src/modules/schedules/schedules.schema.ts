@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 export interface ScheduleAttrs {
   course: mongoose.Types.ObjectId;
-  assessment: mongoose.Types.ObjectId;
   created_by: mongoose.Types.ObjectId;
   location: string;
   start_time: Date;
@@ -18,7 +17,6 @@ export interface ScheduleAttrs {
 
 export interface ScheduleDoc extends mongoose.Document {
   course: mongoose.Types.ObjectId;
-  assessment: mongoose.Types.ObjectId;
   created_by: mongoose.Types.ObjectId;
   location: string;
   start_time: Date;
@@ -41,11 +39,6 @@ export const scheduleSchema = new mongoose.Schema({
   course: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
-    required: true,
-  },
-  assessment: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Assessment',
     required: true,
   },
   created_by: {

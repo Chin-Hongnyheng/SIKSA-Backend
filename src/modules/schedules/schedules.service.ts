@@ -7,7 +7,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ScheduleDoc } from './schedules.schema';
 import { CourseDoc } from '../courses/courses.schema';
-import { AssessmentDoc } from '../assessments/assessments.schema';
 import { CreateScheduleInput } from './dto/createSchedule.input';
 import { EditScheduleInput } from './dto/editSchedule.input';
 import { DeleteScheduleInput } from './dto/deleteSchedule.input';
@@ -19,19 +18,12 @@ export class SchedulesService {
     private readonly scheduleModel: Model<ScheduleDoc>,
     @InjectModel('Course')
     private readonly courseModel: Model<CourseDoc>,
-    @InjectModel('Assessment')
-    private readonly assessmentModel: Model<AssessmentDoc>,
   ) {}
 
-  private mapSchedule(
-    s: ScheduleDoc,
-    courseCode: string,
-    assessmentName: string,
-  ) {
+  private mapSchedule(s: ScheduleDoc, courseCode: string) {
     return {
       scheduleId: s._id.toString(),
       courseCode,
-      assessmentName,
       location: s.location,
       startTime: s.start_time,
       endTime: s.end_time,
@@ -53,15 +45,6 @@ export class SchedulesService {
     });
     if (!course) {
       throw new NotFoundException(`Course "${input.courseCode}" not found`);
-    }
-    const assessment = await this.assessmentModel.findOne({
-      assessmentName: input.assessmentName,
-      course: course._id,
-    });
-    if (!assessment) {
-      throw new NotFoundException(
-        `Assessment "${input.assessmentName}" not found in course "${input.courseCode}"`,
-      );
     }
 
     const existingSchedules = await this.scheduleModel.find({
@@ -93,7 +76,6 @@ export class SchedulesService {
 
     const schedule = new this.scheduleModel({
       course: course._id,
-      assessment: assessment._id,
       location: input.location,
       start_time: input.startTime,
       end_time: input.endTime,
@@ -117,7 +99,6 @@ export class SchedulesService {
     if (!existing) throw new NotFoundException('Schedule not found');
 
     let courseId = existing.course;
-    let assessmentId = existing.assessment;
 
     if (input.courseCode) {
       const course = await this.courseModel.findOne({
@@ -127,19 +108,6 @@ export class SchedulesService {
         throw new NotFoundException(`Course "${input.courseCode}" not found`);
       courseId = course._id;
     }
-
-    if (input.assessmentName) {
-      const assessment = await this.assessmentModel.findOne({
-        assessmentName: input.assessmentName,
-        course: courseId,
-      });
-      if (!assessment)
-        throw new NotFoundException(
-          `Assessment "${input.assessmentName}" not found in this course`,
-        );
-      assessmentId = assessment._id;
-    }
-
     // OVERLAP CHECK (exclude self)
     const otherSchedules = await this.scheduleModel.find({
       created_by: existing.created_by,
@@ -176,7 +144,6 @@ export class SchedulesService {
       input.scheduleId,
       {
         course: courseId,
-        assessment: assessmentId,
         ...(input.location && { location: input.location }),
         ...(input.startTime && { start_time: input.startTime }),
         ...(input.endTime && { end_time: input.endTime }),
@@ -208,18 +175,12 @@ export class SchedulesService {
     const schedules = await this.scheduleModel
       .find()
       .populate('course', 'courseCode')
-      .populate('assessment', 'assessmentName')
       .sort({ created_at: -1 })
       .exec();
 
     return schedules.map((s) => {
       const course = s.course as unknown as CourseDoc;
-      const assessment = s.assessment as unknown as AssessmentDoc;
-      return this.mapSchedule(
-        s,
-        course?.courseCode ?? '',
-        assessment?.assessmentName ?? '',
-      );
+      return this.mapSchedule(s, course?.courseCode ?? '');
     });
   }
 
@@ -231,13 +192,11 @@ export class SchedulesService {
 
     const schedules = await this.scheduleModel
       .find({ course: course._id })
-      .populate('assessment', 'assessmentName')
       .sort({ created_at: -1 })
       .exec();
 
     return schedules.map((s) => {
-      const assessment = s.assessment as unknown as AssessmentDoc;
-      return this.mapSchedule(s, courseCode, assessment?.assessmentName ?? '');
+      return this.mapSchedule(s, courseCode ?? '');
     });
   }
 
@@ -245,18 +204,12 @@ export class SchedulesService {
     const schedules = await this.scheduleModel
       .find({ created_by: userId })
       .populate('course', 'courseCode')
-      .populate('assessment', 'assessmentName')
       .sort({ created_at: -1 })
       .exec();
 
     return schedules.map((s) => {
       const course = s.course as unknown as CourseDoc;
-      const assessment = s.assessment as unknown as AssessmentDoc;
-      return this.mapSchedule(
-        s,
-        course?.courseCode ?? '',
-        assessment?.assessmentName ?? '',
-      );
+      return this.mapSchedule(s, course?.courseCode ?? '');
     });
   }
 }

@@ -6,12 +6,14 @@ import { courseSchema } from './courses.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/strategies/jwt-auth.strategy';
 import { userSchema } from '../auth/users.schema';
+import { scheduleSchema } from '../schedules/schedules.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: 'Course', schema: courseSchema },
       { name: 'User', schema: userSchema },
+      { name: 'Schedule', schema: scheduleSchema },
     ]),
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,

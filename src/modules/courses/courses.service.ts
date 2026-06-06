@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CourseDoc } from './courses.schema';
+import { ScheduleDoc } from '../schedules/schedules.schema';
 import { CreateCourseInput } from './dto/createCourse.input';
 import { EditCourseInput } from './dto/editCourse.input';
 import { DeleteCourseInput } from './dto/deleteCourse.input';
@@ -14,6 +15,7 @@ import { DeleteCourseInput } from './dto/deleteCourse.input';
 export class CoursesService {
   constructor(
     @InjectModel('Course') private readonly courseModel: Model<CourseDoc>,
+    @InjectModel('Schedule') private readonly scheduleModel: Model<ScheduleDoc>,
   ) {}
 
   private mapSubscriber(user: any) {
@@ -93,15 +95,18 @@ export class CoursesService {
   }
 
   async deleteCourse(input: DeleteCourseInput) {
-    const deleted = await this.courseModel.findOneAndDelete({
+    const course = await this.courseModel.findOne({
       courseCode: input.courseCode,
     });
 
-    if (!deleted) {
+    if (!course) {
       throw new NotFoundException(
         `Course with code "${input.courseCode}" not found`,
       );
     }
+
+    await this.scheduleModel.deleteMany({ course: course._id });
+    await this.courseModel.findByIdAndDelete(course._id);
 
     return { message: 'Course deleted successfully' };
   }
