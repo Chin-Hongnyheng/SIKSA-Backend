@@ -15,7 +15,7 @@ export class MarkAttendanceInput {
   date!: string;
 
   @Field(() => String)
-  status!: string;
+  status!: string; // present | late | absent | permission
 
   @Field(() => String, { nullable: true })
   checkIn?: string | null;

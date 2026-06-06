@@ -30,9 +30,9 @@ export class AttendanceSession {
   @Prop({ type: String, required: true })
   startTime!: string;
 
-  @Field(() => String, { nullable: true })
-  @Prop({ type: String, default: null })
-  endTime?: string | null;
+  @Field(() => String)
+  @Prop({ type: String, required: true })
+  endTime!: string;
 
   @Field(() => String)
   @Prop({ type: String, required: true })

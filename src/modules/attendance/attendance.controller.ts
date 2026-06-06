@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
 import { AttendanceService } from './attendance.service';
 import { MarkAttendanceInput } from './dto/attendance.dto';
@@ -25,28 +25,6 @@ export class AttendanceController {
     return this.attendanceService.markAttendance(body);
   }
 
-  @Post('check-in')
-  checkIn(@Body() body: any) {
-    if (!body || !body.studentId || !body.time) {
-      return {
-        message: 'Invalid request body',
-      };
-    }
-
-    return this.attendanceService.checkIn(body.studentId, body.time);
-  }
-
-  @Post('check-out')
-  checkOut(@Body() body: any) {
-    if (!body || !body.studentId || !body.time) {
-      return {
-        message: 'Invalid request body',
-      };
-    }
-
-    return this.attendanceService.checkOut(body.studentId, body.time);
-  }
-
   @Post('session')
   createAttendanceSession(@Body() body: CreateAttendanceSessionInput) {
     if (
@@ -55,7 +33,8 @@ export class AttendanceController {
       !body.teacherId ||
       !body.title ||
       !body.date ||
-      !body.startTime
+      !body.startTime ||
+      !body.endTime
     ) {
       return {
         message: 'Invalid request body',
@@ -93,10 +72,5 @@ export class AttendanceController {
   @Get('sessions/course/:courseId/active')
   getActiveAttendanceSessionsByCourse(@Param('courseId') courseId: string) {
     return this.attendanceService.getActiveAttendanceSessionsByCourse(courseId);
-  }
-
-  @Delete('session/:sessionId')
-  deleteAttendanceSession(@Param('sessionId') sessionId: string) {
-    return this.attendanceService.deleteAttendanceSession(sessionId);
   }
 }
