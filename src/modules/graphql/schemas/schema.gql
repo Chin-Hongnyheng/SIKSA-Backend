@@ -44,6 +44,12 @@ type AttendanceSummary {
   permission: Int!
 }
 
+type CourseSubscriberType {
+  email: String!
+  id: String!
+  userName: String!
+}
+
 type CoursesType {
   courseCode: String!
   courseName: String!
@@ -112,7 +118,6 @@ input CreateRegisterInput {
 }
 
 input CreateScheduleInput {
-  assessmentName: String!
   color: String
   courseCode: String!
   date: DateTime
@@ -172,7 +177,6 @@ type EditCourseResponse {
 }
 
 input EditScheduleInput {
-  assessmentName: String
   color: String
   courseCode: String
   date: DateTime
@@ -215,9 +219,7 @@ type Mutation {
   checkOut(studentId: String!, time: String!): Attendance!
   closeAttendanceSession(sessionId: String!): AttendanceSession!
   createAssessment(input: CreateAssessmentInput!): CreateAssessmentResponse!
-  createAttendanceSession(
-    input: CreateAttendanceSessionInput!
-  ): AttendanceSession!
+  createAttendanceSession(input: CreateAttendanceSessionInput!): AttendanceSession!
   createCourse(input: CreateCourseInput!): CreateCourseResponse!
   createSchedule(input: CreateScheduleInput!): CreateScheduleResponse!
   deleteAssessment(input: DeleteAssessmentInput!): DeleteAssessmentResponse!
@@ -256,10 +258,7 @@ type Query {
   sessionAttendance(sessionId: String!): [Attendance!]!
   studentAttendance(studentId: String!): [Attendance!]!
   studentAttendanceSummary(studentId: String!): AttendanceSummary!
-  verifyAttendanceSessionPassword(
-    password: String!
-    sessionId: String!
-  ): Boolean!
+  verifyAttendanceSessionPassword(password: String!, sessionId: String!): Boolean!
 }
 
 type RegisterResponse {
@@ -269,7 +268,6 @@ type RegisterResponse {
 }
 
 type Schedule {
-  assessmentName: String!
   color: String
   courseCode: String!
   createdAt: DateTime!

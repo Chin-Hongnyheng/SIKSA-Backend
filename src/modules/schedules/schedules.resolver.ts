@@ -29,7 +29,7 @@ function extractUserId(context: any): string {
 export class SchedulesResolver {
   constructor(private readonly schedulesService: SchedulesService) {}
 
-  @Roles('Teacher', 'Admin')
+  @Roles('Teacher', 'Admin', 'Student')
   @Permissions('schedule:create')
   @Mutation(() => CreateScheduleResponse)
   createSchedule(
@@ -40,14 +40,14 @@ export class SchedulesResolver {
     return this.schedulesService.createSchedule(input, userId);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('Teacher', 'Admin', 'Student')
   @Permissions('schedule:edit')
   @Mutation(() => EditScheduleResponse)
   editSchedule(@Args('input') input: EditScheduleInput) {
     return this.schedulesService.editSchedule(input);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('Teacher', 'Admin', 'Student')
   @Permissions('schedule:delete')
   @Mutation(() => DeleteScheduleResponse)
   deleteSchedule(@Args('input') input: DeleteScheduleInput) {
@@ -70,7 +70,7 @@ export class SchedulesResolver {
   }
 
   // get schedules created by logged-in user
-  @Roles('Teacher', 'Admin')
+  @Roles('Teacher', 'Admin', 'Student')
   @Permissions('schedule:view')
   @Query(() => [Schedule])
   getMySchedules(@Context() context: any) {

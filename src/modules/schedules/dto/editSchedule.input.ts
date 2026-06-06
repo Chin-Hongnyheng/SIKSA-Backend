@@ -9,9 +9,6 @@ export class EditScheduleInput {
   courseCode?: string;
 
   @Field({ nullable: true })
-  assessmentName?: string;
-
-  @Field({ nullable: true })
   location?: string;
 
   @Field({ nullable: true })
