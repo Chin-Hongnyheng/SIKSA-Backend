@@ -25,7 +25,7 @@ type Attendance {
 type AttendanceSession {
   courseId: String!
   date: String!
-  endTime: String
+  endTime: String!
   id: ID
   isActive: Boolean!
   lateAfterMinutes: Int!
@@ -38,10 +38,10 @@ type AttendanceSession {
 }
 
 type AttendanceSummary {
-  absents: Int!
-  earlyLeave: Int!
+  absent: Int!
   late: Int!
   permission: Int!
+  present: Int!
 }
 
 type CourseSubscriberType {
@@ -73,7 +73,7 @@ type CreateAssessmentResponse {
 input CreateAttendanceSessionInput {
   courseId: String!
   date: String!
-  endTime: String
+  endTime: String!
   lateAfterMinutes: Int
   passwordRefreshSeconds: Int
   startTime: String!
@@ -215,8 +215,6 @@ input MarkAttendanceInput {
 }
 
 type Mutation {
-  checkIn(studentId: String!, time: String!): Attendance!
-  checkOut(studentId: String!, time: String!): Attendance!
   closeAttendanceSession(sessionId: String!): AttendanceSession!
   createAssessment(input: CreateAssessmentInput!): CreateAssessmentResponse!
   createAttendanceSession(input: CreateAttendanceSessionInput!): AttendanceSession!
