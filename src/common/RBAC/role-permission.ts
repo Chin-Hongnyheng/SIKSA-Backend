@@ -6,7 +6,6 @@ export const ROLE_PERMISSIONS = {
     'course:edit',
     'course:delete',
     'assessment:create',
-    'assessment:edit',
     'assessment:delete',
     'assessment:view',
     'schedule:view',

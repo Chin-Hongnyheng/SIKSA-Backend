@@ -8,6 +8,9 @@ export class AssessmentsType {
   @Field()
   courseCode!: string;
 
+  @Field({ nullable: true })
+  guide?: string;
+
   @Field()
   createdBy!: string;
 

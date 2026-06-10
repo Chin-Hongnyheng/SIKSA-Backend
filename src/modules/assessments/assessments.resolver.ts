@@ -35,8 +35,8 @@ export class AssessmentsResolver {
     @Args('input') input: CreateAssessmentInput,
     @Context() context: any,
   ) {
-    const { userId } = extractUser(context);
-    return this.assessmentService.createAssessment(input, userId);
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.createAssessment(input, userId, role);
   }
 
   @Roles('Teacher', 'Admin')

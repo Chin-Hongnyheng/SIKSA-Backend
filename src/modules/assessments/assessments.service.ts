@@ -1,4 +1,8 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AssessmentDoc, AssessmentModel } from './assessments.schema';
@@ -19,18 +23,39 @@ export class AssessmentsService {
     return {
       assessmentName: a.assessmentName,
       courseCode: courseCode,
+      guide: a.guide,
       createdBy: a.created_by?.toString(),
       createdAt: a.created_at,
     };
   }
 
-  async createAssessment(input: CreateAssessmentInput, userId: string) {
+  private isCourseOwner(course: CourseDoc, userId: string) {
+    return course.created_by?.toString() === userId;
+  }
+
+  private isCourseSubscriber(course: CourseDoc, userId: string) {
+    return (course.subscribers ?? []).some(
+      (subscriber: any) => subscriber?.toString() === userId,
+    );
+  }
+
+  async createAssessment(
+    input: CreateAssessmentInput,
+    userId: string,
+    role: string,
+  ) {
     const course = await this.courseModel.findOne({
       courseCode: input.courseCode,
     });
     // is this course exist?
     if (!course) {
       throw new Error(`Course with code "${input.courseCode}" not found`);
+    }
+
+    if (role !== 'Admin' && !this.isCourseOwner(course, userId)) {
+      throw new ForbiddenException(
+        'You can only create assessments for your own courses',
+      );
     }
 
     const existing = await this.assessmentModel.findOne({
@@ -46,6 +71,7 @@ export class AssessmentsService {
 
     const assessment = new this.assessmentModel({
       assessmentName: input.assessmentName,
+      guide: input.guide?.trim() || null,
       course: course._id,
       created_by: userId,
       created_at: new Date(),
@@ -101,6 +127,12 @@ export class AssessmentsService {
 
     if (role === 'Teacher') {
       filter.created_by = userId;
+    } else if (role === 'Student') {
+      if (!this.isCourseSubscriber(course, userId)) {
+        throw new ForbiddenException(
+          'You can only view assessments for subscribed courses',
+        );
+      }
     }
 
     const assessments = await this.assessmentModel
@@ -117,6 +149,13 @@ export class AssessmentsService {
 
     if (role === 'Teacher') {
       filter.created_by = userId;
+    } else if (role === 'Student') {
+      const subscribedCourses = await this.courseModel
+        .find({ subscribers: userId })
+        .select('_id')
+        .exec();
+
+      filter.course = { $in: subscribedCourses.map((course) => course._id) };
     }
 
     const assessments = await this.assessmentModel

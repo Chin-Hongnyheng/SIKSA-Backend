@@ -7,6 +7,7 @@ type AssessmentsType {
   courseCode: String!
   createdAt: DateTime!
   createdBy: String!
+  guide: String
 }
 
 type Attendance {
@@ -64,6 +65,7 @@ type CoursesType {
 input CreateAssessmentInput {
   assessmentName: String!
   courseCode: String!
+  guide: String
 }
 
 type CreateAssessmentResponse {

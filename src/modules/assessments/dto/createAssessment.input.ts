@@ -7,4 +7,7 @@ export class CreateAssessmentInput {
 
   @Field()
   assessmentName!: string;
+
+  @Field({ nullable: true })
+  guide?: string;
 }
