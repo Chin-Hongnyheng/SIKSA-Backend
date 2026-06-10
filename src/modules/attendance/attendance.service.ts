@@ -63,108 +63,13 @@ export class AttendanceService {
       title: obj.title,
       date: obj.date,
       startTime: obj.startTime,
-      endTime: obj.endTime ?? null,
+      endTime: obj.endTime,
       password: obj.password,
       passwordExpiresAt: obj.passwordExpiresAt,
       passwordRefreshSeconds: obj.passwordRefreshSeconds ?? 60,
       lateAfterMinutes: obj.lateAfterMinutes ?? 15,
       isActive: obj.isActive,
     };
-  }
-
-  async markAttendance(input: MarkAttendanceInput): Promise<Attendance> {
-    const attendance = await this.attendanceModel.create({
-      studentId: input.studentId,
-      courseId: input.courseId,
-      sessionId: input.sessionId ?? null,
-      date: input.date,
-      status: input.status,
-      checkIn: input.checkIn ?? null,
-      checkOut: input.checkOut ?? null,
-      type: input.status,
-      time: new Date(),
-    });
-
-    return this.mapAttendanceDocument(attendance);
-  }
-
-  async checkIn(studentId: string, time: string): Promise<Attendance> {
-    const attendance = await this.attendanceModel.create({
-      studentId,
-      type: 'check-in',
-      status: 'check-in',
-      time: new Date(time),
-    });
-
-    return this.mapAttendanceDocument(attendance);
-  }
-
-  async checkOut(studentId: string, time: string): Promise<Attendance> {
-    const attendance = await this.attendanceModel.create({
-      studentId,
-      type: 'check-out',
-      status: 'check-out',
-      time: new Date(time),
-    });
-
-    return this.mapAttendanceDocument(attendance);
-  }
-
-  async getStudentAttendance(studentId: string): Promise<Attendance[]> {
-    const records = await this.attendanceModel
-      .find({ studentId })
-      .sort({ createdAt: -1 });
-
-    return records.map((record) => this.mapAttendanceDocument(record));
-  }
-
-  async getCourseAttendance(courseId: string): Promise<Attendance[]> {
-    const records = await this.attendanceModel
-      .find({ courseId })
-      .sort({ createdAt: -1 });
-
-    return records.map((record) => this.mapAttendanceDocument(record));
-  }
-
-  async getSessionAttendance(sessionId: string): Promise<Attendance[]> {
-    const records = await this.attendanceModel
-      .find({ sessionId })
-      .sort({ createdAt: -1 });
-
-    return records.map((record) => this.mapAttendanceDocument(record));
-  }
-
-  async getStudentSummary(studentId: string): Promise<AttendanceSummary> {
-    const records = await this.attendanceModel.find({ studentId });
-
-    const summary: AttendanceSummary = {
-      earlyLeave: 0,
-      absents: 0,
-      late: 0,
-      permission: 0,
-    };
-
-    for (const record of records) {
-      const status = record.status ?? record.type;
-
-      if (status === 'early-leave') {
-        summary.earlyLeave += 1;
-      }
-
-      if (status === 'absent') {
-        summary.absents += 1;
-      }
-
-      if (status === 'late') {
-        summary.late += 1;
-      }
-
-      if (status === 'permission') {
-        summary.permission += 1;
-      }
-    }
-
-    return summary;
   }
 
   async createAttendanceSession(
@@ -178,7 +83,7 @@ export class AttendanceService {
       title: input.title,
       date: input.date,
       startTime: input.startTime,
-      endTime: input.endTime ?? null,
+      endTime: input.endTime,
       password: this.generateSixDigitPassword(),
       passwordExpiresAt: this.getPasswordExpiry(refreshSeconds),
       passwordRefreshSeconds: refreshSeconds,
@@ -217,7 +122,7 @@ export class AttendanceService {
   ): Promise<AttendanceSession[]> {
     const sessions = await this.attendanceSessionModel
       .find({ courseId })
-      .sort({ createdAt: -1 });
+      .sort({ date: -1, createdAt: -1 });
 
     return sessions.map((session) => this.mapSessionDocument(session));
   }
@@ -230,7 +135,7 @@ export class AttendanceService {
         courseId,
         isActive: true,
       })
-      .sort({ createdAt: -1 });
+      .sort({ date: -1, createdAt: -1 });
 
     return sessions.map((session) => this.mapSessionDocument(session));
   }
@@ -255,29 +160,121 @@ export class AttendanceService {
     return this.mapSessionDocument(session);
   }
 
+  async markAttendance(input: MarkAttendanceInput): Promise<Attendance> {
+    const existing = await this.attendanceModel.findOne({
+      studentId: input.studentId,
+      sessionId: input.sessionId ?? null,
+    });
+
+    if (existing) {
+      existing.courseId = input.courseId;
+      existing.sessionId = input.sessionId ?? null;
+      existing.date = input.date;
+      existing.status = input.status;
+      existing.type = input.status;
+      existing.checkIn = input.checkIn ?? null;
+      existing.checkOut = input.checkOut ?? null;
+      existing.time = new Date();
+
+      await existing.save();
+
+      return this.mapAttendanceDocument(existing);
+    }
+
+    const attendance = await this.attendanceModel.create({
+      studentId: input.studentId,
+      courseId: input.courseId,
+      sessionId: input.sessionId ?? null,
+      date: input.date,
+      status: input.status,
+      checkIn: input.checkIn ?? null,
+      checkOut: input.checkOut ?? null,
+      type: input.status,
+      time: new Date(),
+    });
+
+    return this.mapAttendanceDocument(attendance);
+  }
+
+  async getStudentAttendance(studentId: string): Promise<Attendance[]> {
+    const records = await this.attendanceModel
+      .find({ studentId })
+      .sort({ date: -1, createdAt: -1 });
+
+    return records.map((record) => this.mapAttendanceDocument(record));
+  }
+
+  async getCourseAttendance(courseId: string): Promise<Attendance[]> {
+    const records = await this.attendanceModel
+      .find({ courseId })
+      .sort({ date: -1, createdAt: -1 });
+
+    return records.map((record) => this.mapAttendanceDocument(record));
+  }
+
+  async getSessionAttendance(sessionId: string): Promise<Attendance[]> {
+    const records = await this.attendanceModel
+      .find({ sessionId })
+      .sort({ createdAt: -1 });
+
+    return records.map((record) => this.mapAttendanceDocument(record));
+  }
+
+  async getStudentSummary(studentId: string): Promise<AttendanceSummary> {
+    const records = await this.attendanceModel.find({ studentId });
+
+    const summary: AttendanceSummary = {
+      present: 0,
+      late: 0,
+      absent: 0,
+      permission: 0,
+    };
+
+    for (const record of records) {
+      const status = record.status ?? record.type;
+
+      if (status === 'present') {
+        summary.present += 1;
+      }
+
+      if (status === 'late') {
+        summary.late += 1;
+      }
+
+      if (status === 'absent') {
+        summary.absent += 1;
+      }
+
+      if (status === 'permission') {
+        summary.permission += 1;
+      }
+    }
+
+    return summary;
+  }
+
   async verifyAttendanceSessionPassword(
     sessionId: string,
     password: string,
   ): Promise<boolean> {
     const session = await this.attendanceSessionModel.findById(sessionId);
 
-    if (!session) {
-      return false;
-    }
-
-    if (!session.isActive) {
-      return false;
-    }
-
-    if (new Date() > session.passwordExpiresAt) {
-      return false;
-    }
+    if (!session) return false;
+    if (!session.isActive) return false;
+    if (new Date() > session.passwordExpiresAt) return false;
 
     return session.password === password;
   }
 
- async deleteAttendanceSession(sessionId: string): Promise<boolean> {
-    const result = await this.attendanceSessionModel.findByIdAndDelete(sessionId);
-    return result !== null;
+  async deleteAttendanceSession(sessionId: string): Promise<boolean> {
+    // Delete all attendance records linked to this session first
+    await this.attendanceModel.deleteMany({ sessionId }).exec();
+
+    // Delete the attendance session itself
+    const result = await this.attendanceSessionModel
+      .deleteOne({ _id: sessionId })
+      .exec();
+
+    return result.deletedCount > 0;
   }
 }

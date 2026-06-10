@@ -8,9 +8,6 @@ export class Schedule {
   @Field()
   courseCode!: string;
 
-  @Field()
-  assessmentName!: string;
-
   @Field({ nullable: true })
   location?: string;
 
