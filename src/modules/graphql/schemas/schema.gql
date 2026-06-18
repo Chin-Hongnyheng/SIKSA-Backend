@@ -4,10 +4,13 @@
 
 type AssessmentsType {
   assessmentName: String!
+  color: String
   courseCode: String!
   createdAt: DateTime!
   createdBy: String!
   guide: String
+  icon: String
+  imageBase64: String
 }
 
 type Attendance {
@@ -64,8 +67,11 @@ type CoursesType {
 
 input CreateAssessmentInput {
   assessmentName: String!
+  color: String
   courseCode: String!
   guide: String
+  icon: String
+  imageBase64: String
 }
 
 type CreateAssessmentResponse {

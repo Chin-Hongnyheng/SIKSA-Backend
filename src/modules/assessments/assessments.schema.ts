@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 export interface AssessmentAttrs {
   assessmentName: string;
   guide?: string;
+  icon?: string;
+  color?: string;
+  imageBase64?: string;
   course: mongoose.Types.ObjectId;
   created_by: mongoose.Types.ObjectId;
 }
@@ -10,6 +13,9 @@ export interface AssessmentAttrs {
 export interface AssessmentDoc extends mongoose.Document {
   assessmentName: string;
   guide?: string;
+  icon?: string;
+  color?: string;
+  imageBase64?: string;
   course: mongoose.Types.ObjectId;
   created_by: mongoose.Types.ObjectId;
   created_at: Date;
@@ -22,6 +28,9 @@ export interface AssessmentModel extends mongoose.Model<AssessmentDoc> {
 export const assessmentSchema = new mongoose.Schema({
   assessmentName: { type: String, required: true },
   guide: { type: String, default: null },
+  icon: { type: String, default: null },
+  color: { type: String, default: null },
+  imageBase64: { type: String, default: null },
   course: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
@@ -45,3 +54,4 @@ export const Assessment = mongoose.model<AssessmentDoc, AssessmentModel>(
   'Assessment',
   assessmentSchema,
 );
+

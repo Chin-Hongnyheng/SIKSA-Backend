@@ -24,6 +24,9 @@ export class AssessmentsService {
       assessmentName: a.assessmentName,
       courseCode: courseCode,
       guide: a.guide,
+      icon: a.icon,
+      color: a.color,
+      imageBase64: a.imageBase64,
       createdBy: a.created_by?.toString(),
       createdAt: a.created_at,
     };
@@ -72,6 +75,9 @@ export class AssessmentsService {
     const assessment = new this.assessmentModel({
       assessmentName: input.assessmentName,
       guide: input.guide?.trim() || null,
+      icon: input.icon?.trim() || null,
+      color: input.color?.trim() || null,
+      imageBase64: input.imageBase64 || null,
       course: course._id,
       created_by: userId,
       created_at: new Date(),
