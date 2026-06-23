@@ -12,6 +12,8 @@ export const ROLE_PERMISSIONS = {
     'schedule:create',
     'schedule:edit',
     'schedule:delete',
+    'grade:upsert',
+    'grade:view',
   ],
   Admin: ['*'],
 } as const;

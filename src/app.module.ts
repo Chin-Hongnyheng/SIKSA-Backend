@@ -12,6 +12,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AssessmentsModule } from './modules/assessments/assessments.module';
 import { SchedulesModule } from './modules/schedules/schedules.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
+import { GradesModule } from './modules/grades/grades.module';
 
 @Module({
   imports: [
@@ -31,8 +32,9 @@ import { AttendanceModule } from './modules/attendance/attendance.module';
     AssessmentsModule,
     SchedulesModule,
     AttendanceModule,
+    GradesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

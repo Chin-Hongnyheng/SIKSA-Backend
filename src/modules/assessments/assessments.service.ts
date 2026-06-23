@@ -9,6 +9,7 @@ import { AssessmentDoc, AssessmentModel } from './assessments.schema';
 import { CreateAssessmentInput } from './dto/createAssessment.input';
 import { DeleteAssessmentInput } from './dto/deleteAssessment.input';
 import { CourseDoc, CourseModel } from '../courses/courses.schema';
+import { GradeDoc } from '../grades/grades.schema';
 
 @Injectable()
 export class AssessmentsService {
@@ -17,6 +18,8 @@ export class AssessmentsService {
     private readonly assessmentModel: Model<AssessmentDoc>,
     @InjectModel('Course')
     private readonly courseModel: Model<CourseDoc>,
+    @InjectModel('Grade')
+    private readonly gradeModel: Model<GradeDoc>,
   ) {}
 
   private mapAssessment(a: AssessmentDoc, courseCode: string) {
@@ -115,6 +118,12 @@ export class AssessmentsService {
         `Assessment "${input.assessmentName}" not found for course "${input.courseCode}"`,
       );
     }
+
+    // Cascade-delete all grade records tied to this assessment + course
+    await this.gradeModel.deleteMany({
+      course: course._id,
+      assessmentName: input.assessmentName,
+    });
 
     return { message: 'Assessment deleted successfully' };
   }

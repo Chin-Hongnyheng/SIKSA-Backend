@@ -207,6 +207,17 @@ type ForgetResponse {
   message: String!
 }
 
+type GradeType {
+  assessmentName: String!
+  courseCode: String!
+  gradedAt: DateTime!
+  gradedBy: String!
+  maxScore: Float!
+  score: Float!
+  studentId: String!
+  studentName: String!
+}
+
 type LoginResponse {
   accessToken: String!
   refreshToken: String!
@@ -242,6 +253,8 @@ type Mutation {
   register(input: CreateRegisterInput!): RegisterResponse!
   subscribeCourse(courseCode: String!): CreateCourseResponse!
   updateProfile(input: UpdateUserInput!): UpdateResponse!
+  upsertGrade(input: UpsertGradeInput!): UpsertGradeResponse!
+  upsertGrades(input: UpsertGradesInput!): UpsertGradeResponse!
   validateLogin(input: CreateLoginInput!): String!
   validateRegister(input: CreateRegisterInput!): String!
 }
@@ -256,6 +269,7 @@ type Query {
   getAssessmentsByCourseCode(courseCode: String!): [AssessmentsType!]!
   getCourseByCode(courseCode: String!): CoursesType!
   getCourseSubscribers(courseCode: String!): [CourseSubscriberType!]!
+  getGradesByCourse(courseCode: String!): [GradeType!]!
   getMyCourses: [CoursesType!]!
   getMySchedules: [Schedule!]!
   getMyTotalStudents: Int!
@@ -303,6 +317,22 @@ input UpdateUserInput {
   notification: String
   photo_url: String
   userName: String
+}
+
+input UpsertGradeInput {
+  assessmentName: String!
+  courseCode: String!
+  maxScore: Float = 100
+  score: Float!
+  studentId: String!
+}
+
+type UpsertGradeResponse {
+  message: String!
+}
+
+input UpsertGradesInput {
+  grades: [UpsertGradeInput!]!
 }
 
 type UserType {
