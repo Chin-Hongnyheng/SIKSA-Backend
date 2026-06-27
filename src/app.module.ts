@@ -13,6 +13,7 @@ import { AssessmentsModule } from './modules/assessments/assessments.module';
 import { SchedulesModule } from './modules/schedules/schedules.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
 import { GradesModule } from './modules/grades/grades.module';
+import { AssessmentFoldersModule } from './modules/assessment-folders/assessment-folders.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { GradesModule } from './modules/grades/grades.module';
     SchedulesModule,
     AttendanceModule,
     GradesModule,
+    AssessmentFoldersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,6 +2,14 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AssessmentFolderType {
+  assessmentKeys: [String!]!
+  colorHex: String!
+  id: ID!
+  name: String!
+  order: Int!
+}
+
 type AssessmentsType {
   assessmentName: String!
   color: String
@@ -63,6 +71,12 @@ type CoursesType {
   isSubscribed: Boolean!
   subscriberCount: Int!
   subscribers: [CourseSubscriberType!]!
+}
+
+input CreateAssessmentFolderInput {
+  assessmentKeys: [String!]
+  colorHex: String!
+  name: String!
 }
 
 input CreateAssessmentInput {
@@ -147,6 +161,11 @@ type CreateScheduleResponse {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type DeleteAssessmentFolderResponse {
+  message: String!
+  success: Boolean!
+}
 
 input DeleteAssessmentInput {
   assessmentName: String!
@@ -236,10 +255,12 @@ input MarkAttendanceInput {
 type Mutation {
   closeAttendanceSession(sessionId: String!): AttendanceSession!
   createAssessment(input: CreateAssessmentInput!): CreateAssessmentResponse!
+  createAssessmentFolder(input: CreateAssessmentFolderInput!): AssessmentFolderType!
   createAttendanceSession(input: CreateAttendanceSessionInput!): AttendanceSession!
   createCourse(input: CreateCourseInput!): CreateCourseResponse!
   createSchedule(input: CreateScheduleInput!): CreateScheduleResponse!
   deleteAssessment(input: DeleteAssessmentInput!): DeleteAssessmentResponse!
+  deleteAssessmentFolder(id: String!): DeleteAssessmentFolderResponse!
   deleteAttendanceSession(sessionId: String!): Boolean!
   deleteCourse(input: DeleteCourseInput!): DeleteCourseResponse!
   deleteSchedule(input: DeleteScheduleInput!): DeleteScheduleResponse!
@@ -251,7 +272,9 @@ type Mutation {
   refresh(refreshToken: String!): LoginResponse!
   refreshAttendanceSessionPassword(sessionId: String!): AttendanceSession!
   register(input: CreateRegisterInput!): RegisterResponse!
+  reorderAssessmentFolders(folderIds: [String!]!): ReorderAssessmentFoldersResponse!
   subscribeCourse(courseCode: String!): CreateCourseResponse!
+  updateAssessmentFolder(input: UpdateAssessmentFolderInput!): AssessmentFolderType!
   updateProfile(input: UpdateUserInput!): UpdateResponse!
   upsertGrade(input: UpsertGradeInput!): UpsertGradeResponse!
   upsertGrades(input: UpsertGradesInput!): UpsertGradeResponse!
@@ -270,6 +293,7 @@ type Query {
   getCourseByCode(courseCode: String!): CoursesType!
   getCourseSubscribers(courseCode: String!): [CourseSubscriberType!]!
   getGradesByCourse(courseCode: String!): [GradeType!]!
+  getMyAssessmentFolders: [AssessmentFolderType!]!
   getMyCourses: [CoursesType!]!
   getMySchedules: [Schedule!]!
   getMyTotalStudents: Int!
@@ -287,6 +311,11 @@ type RegisterResponse {
   refreshToken: String!
 }
 
+type ReorderAssessmentFoldersResponse {
+  message: String!
+  success: Boolean!
+}
+
 type Schedule {
   color: String
   courseCode: String!
@@ -302,6 +331,13 @@ type Schedule {
   selectedDays: [String!]
   startDate: DateTime
   startTime: DateTime!
+}
+
+input UpdateAssessmentFolderInput {
+  assessmentKeys: [String!]
+  colorHex: String
+  id: ID!
+  name: String
 }
 
 type UpdateResponse {
