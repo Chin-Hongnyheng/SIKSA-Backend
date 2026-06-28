@@ -47,6 +47,7 @@ export class CoursesService {
       isSubscribed: currentUserId
         ? subscriberIds.includes(currentUserId)
         : false,
+      courseImg: c.course_img ?? null,
       subscribers: subscribers
         .filter((subscriber: any) => subscriber?.userName && subscriber?.email)
         .map((subscriber: any) => this.mapSubscriber(subscriber)),
@@ -63,6 +64,7 @@ export class CoursesService {
 
     const course = new this.courseModel({
       ...input,
+      course_img: input.course_img ?? null,
       created_by: userId,
       subscribers: [],
       created_at: new Date(),
@@ -81,6 +83,7 @@ export class CoursesService {
         ...(input.description !== undefined && {
           description: input.description,
         }),
+        ...(input.course_img !== undefined && { course_img: input.course_img }),
       },
       { new: true },
     );
@@ -190,5 +193,16 @@ export class CoursesService {
     });
 
     return studentIds.size;
+  }
+  async updateCourseImage(courseCode: string, imageUrl: string) {
+    const course = await this.courseModel.findOneAndUpdate(
+      { courseCode },
+      { course_img: imageUrl },
+      { new: true },
+    );
+    if (!course) {
+      throw new NotFoundException(`Course with code "${courseCode}" not found`);
+    }
+    return course;
   }
 }

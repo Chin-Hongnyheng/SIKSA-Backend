@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/strategies/jwt-auth.strategy';
 import { userSchema } from '../auth/users.schema';
 import { scheduleSchema } from '../schedules/schedules.schema';
+import { CoursesController } from './courses.controller';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { scheduleSchema } from '../schedules/schedules.schema';
       secret: process.env.JWT_ACCESS_SECRET,
     }),
   ],
+  controllers: [CoursesController],
   providers: [CoursesService, CoursesResolver, JwtStrategy],
   exports: [JwtModule],
 })

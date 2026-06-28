@@ -1,4 +1,4 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, Float } from '@nestjs/graphql';
 
 @InputType()
 export class CreateRegisterInput {
@@ -8,8 +8,8 @@ export class CreateRegisterInput {
   @Field()
   email!: string;
 
-  @Field()
-  phone!: number;
+  @Field(() => Float, { nullable: true })
+  phone?: number;
 
   @Field()
   password!: string;
@@ -18,7 +18,7 @@ export class CreateRegisterInput {
   confirmPassword!: string;
 
   @Field({ nullable: true })
-  role?: 'Student' | 'Teacher' | 'Admin';
+  role?: 'User' | 'Admin';
 
   @Field({ nullable: true })
   dob?: Date;
@@ -32,9 +32,9 @@ export class CreateRegisterInput {
   @Field({ nullable: true })
   photo_url?: string;
 
-  @Field({ defaultValue: 'ON' })
-  notification?: string;
+  // @Field({ defaultValue: 'ON' })
+  // notification?: string;
 
-  @Field({ defaultValue: 'ENGLISH' })
-  language?: string;
+  // @Field({ defaultValue: 'ENGLISH' })
+  // language?: string;
 }

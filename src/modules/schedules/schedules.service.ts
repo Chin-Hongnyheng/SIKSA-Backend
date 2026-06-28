@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ScheduleDoc } from './schedules.schema';
@@ -47,33 +43,7 @@ export class SchedulesService {
       throw new NotFoundException(`Course "${input.courseCode}" not found`);
     }
 
-    const existingSchedules = await this.scheduleModel.find({
-      created_by: userId,
-    });
-
-    for (const existing of existingSchedules) {
-      const sameDate = _isSameDate(existing, input);
-      if (!sameDate) continue; // different date → no conflict possible
-
-      // Check time overlap: new schedule overlaps if NOT (newEnd <= existStart OR newStart >= existEnd)
-      const newStart = new Date(input.startTime).getTime();
-      const newEnd = new Date(input.endTime).getTime();
-      const existStart = new Date(existing.start_time).getTime();
-      const existEnd = new Date(existing.end_time).getTime();
-
-      const overlaps = newStart < existEnd && newEnd > existStart;
-
-      if (overlaps) {
-        const existStartStr = new Date(
-          existing.start_time,
-        ).toLocaleTimeString();
-        const existEndStr = new Date(existing.end_time).toLocaleTimeString();
-        throw new BadRequestException(
-          `Schedule overlaps with an existing schedule from ${existStartStr} to ${existEndStr}`,
-        );
-      }
-    }
-
+    // No overlap blocking — frontend warns the user and they choose to proceed.
     const schedule = new this.scheduleModel({
       course: course._id,
       location: input.location,
@@ -108,38 +78,8 @@ export class SchedulesService {
         throw new NotFoundException(`Course "${input.courseCode}" not found`);
       courseId = course._id;
     }
-    // OVERLAP CHECK (exclude self)
-    const otherSchedules = await this.scheduleModel.find({
-      created_by: existing.created_by,
-      _id: { $ne: input.scheduleId },
-    });
 
-    const newStart = new Date(input.startTime ?? existing.start_time).getTime();
-    const newEnd = new Date(input.endTime ?? existing.end_time).getTime();
-
-    for (const other of otherSchedules) {
-      const otherStart = new Date(other.start_time).getTime();
-      const otherEnd = new Date(other.end_time).getTime();
-      const overlaps = newStart < otherEnd && newEnd > otherStart;
-      if (!overlaps) continue;
-
-      const sameDate = _isSameDate(other, {
-        recurrenceType: input.recurrenceType ?? existing.recurrence_type,
-        date: input.date ?? existing.date,
-        startDate: input.startDate ?? existing.startDate,
-        endDate: input.endDate ?? existing.endDate,
-        selectedDays: input.selectedDays ?? existing.selectedDays,
-        startTime: input.startTime ?? existing.start_time,
-        endTime: input.endTime ?? existing.end_time,
-      } as any);
-
-      if (sameDate) {
-        throw new BadRequestException(
-          'Schedule overlaps with an existing schedule',
-        );
-      }
-    }
-
+    // No overlap blocking — frontend warns the user and they choose to proceed.
     await this.scheduleModel.findByIdAndUpdate(
       input.scheduleId,
       {
@@ -212,62 +152,31 @@ export class SchedulesService {
       return this.mapSchedule(s, course?.courseCode ?? '');
     });
   }
-}
 
-function _isSameDate(
-  existing: ScheduleDoc,
-  input: CreateScheduleInput,
-): boolean {
-  const recurrence = existing.recurrence_type?.toUpperCase();
-  const inputRecurrence = input.recurrenceType?.toUpperCase();
+  async getEnrolledSchedules(userId: string) {
+    // 1. Find every course this user is subscribed to.
+    const enrolledCourses = await this.courseModel
+      .find({ subscribers: userId })
+      .select('_id courseCode')
+      .exec();
 
-  // compare exact date
-  if (inputRecurrence === 'NONE') {
-    if (recurrence !== 'NONE') return false;
-    const existDate = existing.date
-      ? new Date(existing.date).toDateString()
-      : null;
-    const inputDate = input.date ? new Date(input.date).toDateString() : null;
-    return existDate === inputDate;
-  }
+    if (enrolledCourses.length === 0) return [];
 
-  // always overlaps within range
-  if (inputRecurrence === 'DAILY') {
-    if (recurrence !== 'DAILY') return false;
-    // Check if date ranges overlap
-    const newStart = new Date(input.startDate!).getTime();
-    const newEnd = new Date(input.endDate!).getTime();
-    const existStart = new Date(existing.startDate!).getTime();
-    const existEnd = new Date(existing.endDate!).getTime();
-    return newStart <= existEnd && newEnd >= existStart;
-  }
-
-  // check if selectedDays overlap within range
-  if (inputRecurrence === 'WEEKLY') {
-    if (recurrence !== 'WEEKLY') return false;
-    const sharedDays = (input.selectedDays ?? []).some((day) =>
-      (existing.selectedDays ?? []).includes(day),
+    const courseIds = enrolledCourses.map((c) => c._id);
+    const courseCodeMap = new Map(
+      enrolledCourses.map((c) => [c._id.toString(), c.courseCode]),
     );
-    if (!sharedDays) return false;
-    const newStart = new Date(input.startDate!).getTime();
-    const newEnd = new Date(input.endDate!).getTime();
-    const existStart = new Date(existing.startDate!).getTime();
-    const existEnd = new Date(existing.endDate!).getTime();
-    return newStart <= existEnd && newEnd >= existStart;
-  }
 
-  // check if same day-of-month within overlapping range
-  if (inputRecurrence === 'MONTHLY') {
-    if (recurrence !== 'MONTHLY') return false;
-    const inputStartDay = new Date(input.startDate!).getDate();
-    const existStartDay = new Date(existing.startDate!).getDate();
-    if (inputStartDay !== existStartDay) return false;
-    const newStart = new Date(input.startDate!).getTime();
-    const newEnd = new Date(input.endDate!).getTime();
-    const existStart = new Date(existing.startDate!).getTime();
-    const existEnd = new Date(existing.endDate!).getTime();
-    return newStart <= existEnd && newEnd >= existStart;
-  }
+    // 2. Fetch all schedules whose `course` field is one of those ids.
+    const schedules = await this.scheduleModel
+      .find({ course: { $in: courseIds } })
+      .sort({ created_at: -1 })
+      .exec();
 
-  return false;
+    // 3. Map using the same private helper already in the service.
+    return schedules.map((s) => {
+      const courseCode = courseCodeMap.get(s.course?.toString() ?? '') ?? '';
+      return this.mapSchedule(s, courseCode);
+    });
+  }
 }

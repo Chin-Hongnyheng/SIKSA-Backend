@@ -14,6 +14,7 @@ import { EmailPipe } from 'src/common/pipe/email.pipe';
 import { PasswordPipe } from 'src/common/pipe/password.pipe';
 import { UserBlock } from 'src/common/pipe/UserBlock.pipe';
 import { EmailService } from '../../notifications/email.service';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { EmailService } from '../../notifications/email.service';
     UserBlock,
     EmailService,
   ],
-  controllers: [VerificationController],
+  controllers: [VerificationController, AuthController],
   exports: [JwtModule, PassportModule],
 })
 export class AuthModule {}

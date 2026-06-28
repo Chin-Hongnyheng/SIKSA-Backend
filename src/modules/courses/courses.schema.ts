@@ -5,6 +5,7 @@ export interface CourseAttrs {
   courseCode: string;
   description: string;
   created_by: mongoose.Types.ObjectId;
+  course_img?: string;
 }
 
 export interface CourseDoc extends mongoose.Document {
@@ -13,6 +14,7 @@ export interface CourseDoc extends mongoose.Document {
   description?: string;
   created_by: mongoose.Types.ObjectId;
   subscribers: mongoose.Types.ObjectId[];
+  course_img?: string;
   created_at: Date;
 }
 
@@ -36,6 +38,7 @@ export const courseSchema = new mongoose.Schema({
       default: [],
     },
   ],
+  course_img: { type: String, default: null },
   created_at: { type: Date, default: Date.now },
 });
 

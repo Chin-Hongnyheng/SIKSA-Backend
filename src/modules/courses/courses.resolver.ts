@@ -30,7 +30,7 @@ function extractUserId(context: any): string {
 export class CoursesResolver {
   constructor(private readonly coursesService: CoursesService) {}
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:create')
   @Mutation(() => CreateCourseResponse)
   createCourse(
@@ -41,21 +41,21 @@ export class CoursesResolver {
     return this.coursesService.createCourse(input, userId);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:edit')
   @Mutation(() => EditCourseResponse)
   editCourse(@Args('input') input: EditCourseInput) {
     return this.coursesService.editCourse(input);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:delete')
   @Mutation(() => DeleteCourseResponse)
   deleteCourse(@Args('input') input: DeleteCourseInput) {
     return this.coursesService.deleteCourse(input);
   }
 
-  @Roles('Student')
+  @Roles('User')
   @Permissions('course:subscribe')
   @Mutation(() => CreateCourseResponse)
   subscribeCourse(
@@ -66,7 +66,7 @@ export class CoursesResolver {
     return this.coursesService.subscribeCourse(courseCode, userId);
   }
 
-  @Roles('Student', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:view')
   @Query(() => [CoursesType])
   getAllCourses(@Context() context: any) {
@@ -74,7 +74,7 @@ export class CoursesResolver {
     return this.coursesService.getAllCourses(userId);
   }
 
-  @Roles('Student', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:view')
   @Query(() => CoursesType)
   getCourseByCode(
@@ -85,7 +85,7 @@ export class CoursesResolver {
     return this.coursesService.getCourseByCode(courseCode, userId);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:view')
   @Query(() => [CoursesType])
   getMyCourses(@Context() context: any) {
@@ -93,7 +93,7 @@ export class CoursesResolver {
     return this.coursesService.getMyCourses(userId);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:view')
   @Query(() => [CourseSubscriberType])
   getCourseSubscribers(
@@ -105,7 +105,7 @@ export class CoursesResolver {
     return this.coursesService.getCourseSubscribers(courseCode, userId, role);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:view')
   @Query(() => Int)
   getMyTotalStudents(@Context() context: any) {

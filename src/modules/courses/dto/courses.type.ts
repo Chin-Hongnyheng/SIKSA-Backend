@@ -37,4 +37,7 @@ export class CoursesType {
 
   @Field(() => [CourseSubscriberType])
   subscribers!: CourseSubscriberType[];
+
+  @Field({ nullable: true })
+  courseImg?: string;
 }
