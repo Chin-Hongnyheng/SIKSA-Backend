@@ -12,14 +12,11 @@ export const ROLE_PERMISSIONS = {
     'schedule:create',
     'schedule:edit',
     'schedule:delete',
-<<<<<<< HEAD
     'grade:upsert',
     'grade:view',
-=======
     'attendance:view',
     'attendance:mark',
     'attendance:manage',
->>>>>>> Nyhengdev
   ],
   Admin: ['*'],
 } as const;

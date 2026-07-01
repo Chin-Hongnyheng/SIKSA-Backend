@@ -227,7 +227,6 @@ type ForgetResponse {
   message: String!
 }
 
-<<<<<<< HEAD
 type GradeType {
   assessmentName: String!
   courseCode: String!
@@ -237,7 +236,8 @@ type GradeType {
   score: Float!
   studentId: String!
   studentName: String!
-=======
+}
+
 input GoogleAuthInput {
   idToken: String!
   role: String!
@@ -246,7 +246,6 @@ input GoogleAuthInput {
 type GoogleAuthResponse {
   accessToken: String!
   refreshToken: String!
->>>>>>> Nyhengdev
 }
 
 type LoginResponse {
@@ -267,12 +266,8 @@ input MarkAttendanceInput {
 type Mutation {
   closeAttendanceSession(sessionId: String!): AttendanceSessionType!
   createAssessment(input: CreateAssessmentInput!): CreateAssessmentResponse!
-<<<<<<< HEAD
   createAssessmentFolder(input: CreateAssessmentFolderInput!): AssessmentFolderType!
-  createAttendanceSession(input: CreateAttendanceSessionInput!): AttendanceSession!
-=======
   createAttendanceSession(input: CreateAttendanceSessionInput!): AttendanceSessionType!
->>>>>>> Nyhengdev
   createCourse(input: CreateCourseInput!): CreateCourseResponse!
   createSchedule(input: CreateScheduleInput!): CreateScheduleResponse!
   deleteAssessment(input: DeleteAssessmentInput!): DeleteAssessmentResponse!
@@ -310,12 +305,9 @@ type Query {
   getAssessmentsByCourseCode(courseCode: String!): [AssessmentsType!]!
   getCourseByCode(courseCode: String!): CoursesType!
   getCourseSubscribers(courseCode: String!): [CourseSubscriberType!]!
-<<<<<<< HEAD
   getGradesByCourse(courseCode: String!): [GradeType!]!
   getMyAssessmentFolders: [AssessmentFolderType!]!
-=======
   getEnrolledSchedules: [Schedule!]!
->>>>>>> Nyhengdev
   getMyCourses: [CoursesType!]!
   getMySchedules: [Schedule!]!
   getMyTotalStudents: Int!
