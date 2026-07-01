@@ -17,7 +17,7 @@ function extractUserId(context: any): string {
 @UseGuards(JwtAuthGuard)
 @Resolver()
 export class AssessmentFoldersResolver {
-  constructor(private readonly foldersService: AssessmentFoldersService) {}
+  constructor(private readonly foldersService: AssessmentFoldersService) { }
 
   @Mutation(() => AssessmentFolderType)
   createAssessmentFolder(

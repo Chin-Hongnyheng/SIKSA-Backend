@@ -22,4 +22,4 @@ import { userSchema } from '../auth/users.schema';
   providers: [GradesResolver, GradesService, JwtStrategy],
   exports: [JwtModule],
 })
-export class GradesModule {}
+export class GradesModule { }

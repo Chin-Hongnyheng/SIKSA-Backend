@@ -22,4 +22,4 @@ import { gradeSchema } from '../grades/grades.schema';
   providers: [AssessmentsResolver, AssessmentsService, JwtStrategy],
   exports: [JwtModule],
 })
-export class AssessmentsModule {}
+export class AssessmentsModule { }

@@ -17,4 +17,4 @@ import { AssessmentFoldersResolver } from './assessment-folders.resolver';
   providers: [AssessmentFoldersService, AssessmentFoldersResolver],
   exports: [AssessmentFoldersService],
 })
-export class AssessmentFoldersModule {}
+export class AssessmentFoldersModule { }

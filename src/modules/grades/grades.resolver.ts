@@ -25,7 +25,7 @@ function extractUser(context: any): { userId: string; role: string } {
 @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
 @Resolver()
 export class GradesResolver {
-  constructor(private readonly gradesService: GradesService) {}
+  constructor(private readonly gradesService: GradesService) { }
 
   @Roles('Teacher', 'Admin')
   @Permissions('grade:upsert')

@@ -20,7 +20,7 @@ export class AssessmentsService {
     private readonly courseModel: Model<CourseDoc>,
     @InjectModel('Grade')
     private readonly gradeModel: Model<GradeDoc>,
-  ) {}
+  ) { }
 
   private mapAssessment(a: AssessmentDoc, courseCode: string) {
     return {

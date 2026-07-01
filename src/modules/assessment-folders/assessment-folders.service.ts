@@ -9,7 +9,7 @@ export class AssessmentFoldersService {
   constructor(
     @InjectModel('AssessmentFolder')
     private readonly folderModel: Model<AssessmentFolderDoc>,
-  ) {}
+  ) { }
 
   async createFolder(
     input: CreateAssessmentFolderInput,

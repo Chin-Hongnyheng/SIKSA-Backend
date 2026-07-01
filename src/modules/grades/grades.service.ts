@@ -20,7 +20,7 @@ export class GradesService {
     private readonly courseModel: Model<CourseDoc>,
     @InjectModel('User')
     private readonly userModel: Model<UserDoc>,
-  ) {}
+  ) { }
 
   // ── Helpers ──────────────────────────────────────────
 

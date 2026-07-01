@@ -2,7 +2,7 @@ import { PipeTransform, BadRequestException } from '@nestjs/common';
 import { ObjectSchema } from 'joi';
 
 export class JoiValidationPipe implements PipeTransform {
-  constructor(private schema: ObjectSchema) {}
+  constructor(private schema: ObjectSchema) { }
 
   transform(value: any) {
     const { error } = this.schema.validate(value);
