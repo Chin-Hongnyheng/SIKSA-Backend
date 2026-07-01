@@ -140,7 +140,7 @@ export class AssessmentsService {
 
     const filter: Record<string, any> = { course: course._id };
 
-    if (role === 'Teacher') {
+    if (role === 'User') {
       filter.created_by = userId;
     } else if (role === 'Student') {
       if (!this.isCourseSubscriber(course, userId)) {
@@ -162,7 +162,7 @@ export class AssessmentsService {
   async getAllMyAssessments(userId: string, role: string) {
     const filter: Record<string, any> = {};
 
-    if (role === 'Teacher') {
+    if (role === 'User') {
       filter.created_by = userId;
     } else if (role === 'Student') {
       const subscribedCourses = await this.courseModel

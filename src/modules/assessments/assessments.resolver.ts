@@ -28,7 +28,7 @@ function extractUser(context: any): { userId: string; role: string } {
 export class AssessmentsResolver {
   constructor(private readonly assessmentService: AssessmentsService) {}
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('assessment:create')
   @Mutation(() => CreateAssessmentResponse)
   createAssessment(
@@ -39,7 +39,7 @@ export class AssessmentsResolver {
     return this.assessmentService.createAssessment(input, userId, role);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('assessment:delete')
   @Mutation(() => DeleteAssessmentResponse)
   deleteAssessment(
@@ -50,7 +50,7 @@ export class AssessmentsResolver {
     return this.assessmentService.deleteAssessment(input, userId, role);
   }
 
-  @Roles('Student', 'Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('assessment:view')
   @Query(() => [AssessmentsType])
   getAssessmentsByCourseCode(
@@ -65,7 +65,7 @@ export class AssessmentsResolver {
     );
   }
 
-  @Roles('Student', 'Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('assessment:view')
   @Query(() => [AssessmentsType])
   getAllMyAssessments(@Context() context: any) {

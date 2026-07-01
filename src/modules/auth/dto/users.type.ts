@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
 
 @ObjectType()
 export class UserType {
@@ -11,8 +11,8 @@ export class UserType {
   @Field()
   email!: string;
 
-  @Field()
-  phone!: number;
+  @Field(() => Float, { nullable: true })
+  phone?: number;
 
   @Field()
   role!: string;
@@ -29,9 +29,9 @@ export class UserType {
   @Field(() => String, { nullable: true })
   photo_url?: string;
 
-  @Field()
-  notification!: string;
+  @Field(() => String, { nullable: true })
+  notification?: string;
 
-  @Field()
-  language!: string;
+  @Field(() => String, { nullable: true })
+  language?: string;
 }

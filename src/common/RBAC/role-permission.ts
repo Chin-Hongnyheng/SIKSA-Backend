@@ -1,19 +1,25 @@
 export const ROLE_PERMISSIONS = {
-  Student: ['course:view', 'course:subscribe', 'assessment:view'],
-  Teacher: [
+  User: [
     'course:view',
+    'course:subscribe',
     'course:create',
     'course:edit',
     'course:delete',
+    'assessment:view',
     'assessment:create',
     'assessment:delete',
-    'assessment:view',
     'schedule:view',
     'schedule:create',
     'schedule:edit',
     'schedule:delete',
+<<<<<<< HEAD
     'grade:upsert',
     'grade:view',
+=======
+    'attendance:view',
+    'attendance:mark',
+    'attendance:manage',
+>>>>>>> Nyhengdev
   ],
   Admin: ['*'],
 } as const;

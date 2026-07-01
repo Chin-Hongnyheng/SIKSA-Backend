@@ -6,7 +6,7 @@ export class MarkAttendanceInput {
   studentId!: string;
 
   @Field(() => String)
-  courseId!: string;
+  courseCode!: string;
 
   @Field(() => String, { nullable: true })
   sessionId?: string | null;
@@ -14,8 +14,8 @@ export class MarkAttendanceInput {
   @Field(() => String)
   date!: string;
 
-  @Field(() => String)
-  status!: string; // present | late | absent | permission
+  @Field(() => String, { nullable: true })
+  status?: string | null;
 
   @Field(() => String, { nullable: true })
   checkIn?: string | null;

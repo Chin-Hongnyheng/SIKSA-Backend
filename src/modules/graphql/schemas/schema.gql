@@ -21,31 +21,18 @@ type AssessmentsType {
   imageBase64: String
 }
 
-type Attendance {
-  checkIn: String
-  checkOut: String
-  courseId: String
-  date: String
-  id: ID
-  sessionId: String
-  status: String
-  studentId: String!
-  time: DateTime
-  type: String
-}
-
-type AttendanceSession {
-  courseId: String!
+type AttendanceSessionType {
+  courseCode: String!
+  createdBy: String!
   date: String!
   endTime: String!
   id: ID
   isActive: Boolean!
   lateAfterMinutes: Int!
   password: String!
-  passwordExpiresAt: DateTime!
+  passwordExpiresAt: String
   passwordRefreshSeconds: Int!
   startTime: String!
-  teacherId: String!
   title: String!
 }
 
@@ -56,6 +43,20 @@ type AttendanceSummary {
   present: Int!
 }
 
+type AttendanceType {
+  checkIn: String
+  checkOut: String
+  courseCode: String
+  date: String
+  id: ID
+  sessionId: String
+  status: String
+  studentId: String!
+  time: String
+  type: String
+}
+
+
 type CourseSubscriberType {
   email: String!
   id: String!
@@ -64,6 +65,7 @@ type CourseSubscriberType {
 
 type CoursesType {
   courseCode: String!
+  courseImg: String
   courseName: String!
   createdAt: DateTime!
   createdBy: String!
@@ -93,19 +95,19 @@ type CreateAssessmentResponse {
 }
 
 input CreateAttendanceSessionInput {
-  courseId: String!
+  courseCode: String!
   date: String!
   endTime: String!
   lateAfterMinutes: Int
   passwordRefreshSeconds: Int
   startTime: String!
-  teacherId: String!
   title: String!
 }
 
 input CreateCourseInput {
   courseCode: String!
   courseName: String!
+  course_img: String
   description: String
 }
 
@@ -130,10 +132,8 @@ input CreateRegisterInput {
   dob: DateTime
   email: String!
   gender: String
-  language: String! = "ENGLISH"
-  notification: String! = "ON"
   password: String!
-  phone: Float!
+  phone: Float
   photo_url: String
   role: String
   userName: String!
@@ -195,6 +195,7 @@ type DeleteScheduleResponse {
 input EditCourseInput {
   courseCode: String!
   courseName: String
+  course_img: String
   description: String
   newCourseCode: String
 }
@@ -226,6 +227,7 @@ type ForgetResponse {
   message: String!
 }
 
+<<<<<<< HEAD
 type GradeType {
   assessmentName: String!
   courseCode: String!
@@ -235,6 +237,16 @@ type GradeType {
   score: Float!
   studentId: String!
   studentName: String!
+=======
+input GoogleAuthInput {
+  idToken: String!
+  role: String!
+}
+
+type GoogleAuthResponse {
+  accessToken: String!
+  refreshToken: String!
+>>>>>>> Nyhengdev
 }
 
 type LoginResponse {
@@ -245,18 +257,22 @@ type LoginResponse {
 input MarkAttendanceInput {
   checkIn: String
   checkOut: String
-  courseId: String!
+  courseCode: String!
   date: String!
   sessionId: String
-  status: String!
+  status: String
   studentId: String!
 }
 
 type Mutation {
-  closeAttendanceSession(sessionId: String!): AttendanceSession!
+  closeAttendanceSession(sessionId: String!): AttendanceSessionType!
   createAssessment(input: CreateAssessmentInput!): CreateAssessmentResponse!
+<<<<<<< HEAD
   createAssessmentFolder(input: CreateAssessmentFolderInput!): AssessmentFolderType!
   createAttendanceSession(input: CreateAttendanceSessionInput!): AttendanceSession!
+=======
+  createAttendanceSession(input: CreateAttendanceSessionInput!): AttendanceSessionType!
+>>>>>>> Nyhengdev
   createCourse(input: CreateCourseInput!): CreateCourseResponse!
   createSchedule(input: CreateScheduleInput!): CreateScheduleResponse!
   deleteAssessment(input: DeleteAssessmentInput!): DeleteAssessmentResponse!
@@ -267,10 +283,11 @@ type Mutation {
   editCourse(input: EditCourseInput!): EditCourseResponse!
   editSchedule(input: EditScheduleInput!): EditScheduleResponse!
   forgetPassword(input: CreateForgetInput!): ForgetResponse!
+  googleAuth(input: GoogleAuthInput!): GoogleAuthResponse!
   login(input: CreateLoginInput!): LoginResponse!
-  markAttendance(input: MarkAttendanceInput!): Attendance!
+  markAttendance(input: MarkAttendanceInput!): AttendanceType!
   refresh(refreshToken: String!): LoginResponse!
-  refreshAttendanceSessionPassword(sessionId: String!): AttendanceSession!
+  refreshAttendanceSessionPassword(sessionId: String!): AttendanceSessionType!
   register(input: CreateRegisterInput!): RegisterResponse!
   reorderAssessmentFolders(folderIds: [String!]!): ReorderAssessmentFoldersResponse!
   subscribeCourse(courseCode: String!): CreateCourseResponse!
@@ -283,24 +300,29 @@ type Mutation {
 }
 
 type Query {
-  activeAttendanceSessionsByCourse(courseId: String!): [AttendanceSession!]!
-  attendanceSessionsByCourse(courseId: String!): [AttendanceSession!]!
-  courseAttendance(courseId: String!): [Attendance!]!
+  activeAttendanceSessionsByCourse(courseCode: String!): [AttendanceSessionType!]!
+  attendanceSession(sessionId: String!): AttendanceSessionType!
+  attendanceSessionsByCourse(courseCode: String!): [AttendanceSessionType!]!
+  courseAttendance(courseCode: String!): [AttendanceType!]!
   getAllCourses: [CoursesType!]!
   getAllMyAssessments: [AssessmentsType!]!
   getAllSchedules: [Schedule!]!
   getAssessmentsByCourseCode(courseCode: String!): [AssessmentsType!]!
   getCourseByCode(courseCode: String!): CoursesType!
   getCourseSubscribers(courseCode: String!): [CourseSubscriberType!]!
+<<<<<<< HEAD
   getGradesByCourse(courseCode: String!): [GradeType!]!
   getMyAssessmentFolders: [AssessmentFolderType!]!
+=======
+  getEnrolledSchedules: [Schedule!]!
+>>>>>>> Nyhengdev
   getMyCourses: [CoursesType!]!
   getMySchedules: [Schedule!]!
   getMyTotalStudents: Int!
   getSchedulesByCourse(courseCode: String!): [Schedule!]!
   me: UserType!
-  sessionAttendance(sessionId: String!): [Attendance!]!
-  studentAttendance(studentId: String!): [Attendance!]!
+  sessionAttendance(sessionId: String!): [AttendanceType!]!
+  studentAttendance(studentId: String!): [AttendanceType!]!
   studentAttendanceSummary(studentId: String!): AttendanceSummary!
   verifyAttendanceSessionPassword(password: String!, sessionId: String!): Boolean!
 }
@@ -349,8 +371,7 @@ input UpdateUserInput {
   address: String
   dob: DateTime
   gender: String
-  language: String
-  notification: String
+  phone: Float
   photo_url: String
   userName: String
 }
@@ -377,9 +398,9 @@ type UserType {
   email: String!
   gender: String
   id: ID!
-  language: String!
-  notification: String!
-  phone: Float!
+  language: String
+  notification: String
+  phone: Float
   photo_url: String
   role: String!
   userName: String!

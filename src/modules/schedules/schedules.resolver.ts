@@ -29,7 +29,7 @@ function extractUserId(context: any): string {
 export class SchedulesResolver {
   constructor(private readonly schedulesService: SchedulesService) {}
 
-  @Roles('Teacher', 'Admin', 'Student')
+  @Roles('User', 'Admin')
   @Permissions('schedule:create')
   @Mutation(() => CreateScheduleResponse)
   createSchedule(
@@ -40,21 +40,21 @@ export class SchedulesResolver {
     return this.schedulesService.createSchedule(input, userId);
   }
 
-  @Roles('Teacher', 'Admin', 'Student')
+  @Roles('User', 'Admin')
   @Permissions('schedule:edit')
   @Mutation(() => EditScheduleResponse)
   editSchedule(@Args('input') input: EditScheduleInput) {
     return this.schedulesService.editSchedule(input);
   }
 
-  @Roles('Teacher', 'Admin', 'Student')
+  @Roles('User', 'Admin')
   @Permissions('schedule:delete')
   @Mutation(() => DeleteScheduleResponse)
   deleteSchedule(@Args('input') input: DeleteScheduleInput) {
     return this.schedulesService.deleteSchedule(input);
   }
 
-  @Roles('Student', 'Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('schedule:view')
   @Query(() => [Schedule])
   getAllSchedules() {
@@ -62,7 +62,7 @@ export class SchedulesResolver {
   }
 
   // get schedules under a specific course
-  @Roles('Student', 'Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('schedule:view')
   @Query(() => [Schedule])
   getSchedulesByCourse(@Args('courseCode') courseCode: string) {
@@ -70,11 +70,19 @@ export class SchedulesResolver {
   }
 
   // get schedules created by logged-in user
-  @Roles('Teacher', 'Admin', 'Student')
+  @Roles('User', 'Admin')
   @Permissions('schedule:view')
   @Query(() => [Schedule])
   getMySchedules(@Context() context: any) {
     const userId = extractUserId(context);
     return this.schedulesService.getMySchedules(userId);
+  }
+
+  @Roles('User', 'Admin')
+  @Permissions('schedule:view')
+  @Query(() => [Schedule])
+  getEnrolledSchedules(@Context() context: any) {
+    const userId = extractUserId(context);
+    return this.schedulesService.getEnrolledSchedules(userId);
   }
 }
