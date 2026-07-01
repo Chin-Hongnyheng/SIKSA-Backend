@@ -38,11 +38,11 @@ export class CoursesService {
     );
 
     return {
-      courseName: c.courseName,
-      courseCode: c.courseCode,
+      courseName: c.courseName || 'Unknown Course',
+      courseCode: c.courseCode || 'UNKNOWN',
       description: c.description,
-      createdBy: creatorName,
-      createdAt: c.created_at,
+      createdBy: creatorName || 'Unknown Instructor',
+      createdAt: c.created_at || new Date(),
       subscriberCount: subscriberIds.length,
       isSubscribed: currentUserId
         ? subscriberIds.includes(currentUserId)
