@@ -56,7 +56,6 @@ type AttendanceType {
   type: String
 }
 
-
 type CourseSubscriberType {
   email: String!
   id: String!
@@ -227,6 +226,16 @@ type ForgetResponse {
   message: String!
 }
 
+input GoogleAuthInput {
+  idToken: String!
+  role: String!
+}
+
+type GoogleAuthResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
 type GradeType {
   assessmentName: String!
   courseCode: String!
@@ -236,16 +245,6 @@ type GradeType {
   score: Float!
   studentId: String!
   studentName: String!
-}
-
-input GoogleAuthInput {
-  idToken: String!
-  role: String!
-}
-
-type GoogleAuthResponse {
-  accessToken: String!
-  refreshToken: String!
 }
 
 type LoginResponse {
@@ -305,9 +304,9 @@ type Query {
   getAssessmentsByCourseCode(courseCode: String!): [AssessmentsType!]!
   getCourseByCode(courseCode: String!): CoursesType!
   getCourseSubscribers(courseCode: String!): [CourseSubscriberType!]!
+  getEnrolledSchedules: [Schedule!]!
   getGradesByCourse(courseCode: String!): [GradeType!]!
   getMyAssessmentFolders: [AssessmentFolderType!]!
-  getEnrolledSchedules: [Schedule!]!
   getMyCourses: [CoursesType!]!
   getMySchedules: [Schedule!]!
   getMyTotalStudents: Int!
