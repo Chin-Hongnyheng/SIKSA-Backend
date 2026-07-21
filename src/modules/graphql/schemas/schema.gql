@@ -303,6 +303,7 @@ type UpdateResponse {
 input UpdateUserInput {
   address: String
   dob: DateTime
+  fcmToken: String
   gender: String
   phone: Float
   photo_url: String

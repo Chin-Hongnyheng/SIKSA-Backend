@@ -13,6 +13,7 @@ export interface UserAttrs {
   gender?: 'Male' | 'Female' | 'Other';
   address?: string;
   photo_url?: string;
+  fcmToken?: string;
 
   // notification?: 'ON' | 'OFF';
   // language?: 'ENGLISH' | 'KHMER';
@@ -30,6 +31,7 @@ export interface UserDoc extends mongoose.Document {
   gender?: 'Male' | 'Female' | 'Other';
   address?: string;
   photo_url?: string;
+  fcmToken?: string | null;
 
   // notification?: 'ON' | 'OFF';
   // language?: 'ENGLISH' | 'KHMER';
@@ -59,6 +61,7 @@ export const userSchema = new mongoose.Schema({
   },
   address: { type: String, default: null },
   photo_url: { type: String, default: null },
+  fcmToken: { type: String, default: null },
   // notification: { type: String, enum: ['ON', 'OFF'], default: 'ON' },
   // language: { type: String, enum: ['ENGLISH', 'KHMER'], default: 'ENGLISH' },
 

@@ -17,6 +17,8 @@ import {
 import { MarkAttendanceInput } from './dto/attendance.dto';
 import { CreateAttendanceSessionInput } from './dto/create-attendance-session.input';
 import { AttendanceSummary } from './dto/attendance-summary.type';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { UserDoc } from '../auth/users.schema';
 
 @Injectable()
 export class AttendanceService {
@@ -32,6 +34,10 @@ export class AttendanceService {
 
     @InjectModel('Course')
     private readonly courseModel: Model<any>,
+
+    @InjectModel('User') private readonly userModel: Model<UserDoc>,
+
+    private notificationsService: NotificationsService,
   ) {}
 
   // ─── Private Helpers ──────────────────────────────────────────────────────
@@ -222,8 +228,42 @@ export class AttendanceService {
       lateAfterMinutes: input.lateAfterMinutes ?? 15,
       isActive: true,
     });
-
+    this.notifySubscribersOfSessionStart(course, session).catch(() => {});
     return this.mapSessionDocument(session);
+  }
+
+  /**
+   * Notifies every subscriber of the course that an attendance session
+   * has just started, so they know to check in.
+   */
+  private async notifySubscribersOfSessionStart(
+    course: any,
+    session: AttendanceSessionDoc,
+  ) {
+    const subscriberIds = (course.subscribers ?? []).map((s: any) =>
+      s?.toString(),
+    );
+
+    if (subscriberIds.length === 0) return;
+
+    const subscribers = await this.userModel.find({
+      _id: { $in: subscriberIds },
+      fcmToken: { $exists: true, $ne: null },
+    });
+
+    if (subscribers.length === 0) return;
+
+    const fcmTokens = subscribers.map((s) => s.fcmToken);
+
+    await this.notificationsService.sendToTokens(fcmTokens, {
+      title: 'Attendance session started',
+      body: `"${session.title}" is now open for "${course.courseName}"`,
+      data: {
+        screen: 'markAttendance',
+        courseCode: course.courseCode,
+        sessionId: session._id.toString(),
+      },
+    });
   }
 
   async refreshAttendanceSessionPassword(sessionId: string): Promise<any> {

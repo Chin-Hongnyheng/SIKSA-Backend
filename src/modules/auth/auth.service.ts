@@ -10,6 +10,7 @@ import { CreateForgetInput } from './dto/forget.input';
 import { PasswordPipe } from 'src/common/pipe/password.pipe';
 import { UpdateUserInput } from './dto/update.input';
 import { getAuth } from 'firebase-admin/auth';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,7 @@ export class AuthService {
     @InjectModel('User') private userModel: Model<UserDoc>,
     private jwt: JwtService,
     private passwordPipe: PasswordPipe,
+    private notificationsService: NotificationsService,
   ) {}
 
   async register(input: CreateRegisterInput) {
@@ -93,6 +95,14 @@ export class AuthService {
       secret: process.env.JWT_REFRESH_SECRET!,
       expiresIn: process.env.JWT_REFRESH_EXPIRES as any,
     });
+
+    this.notificationsService
+      .sendToToken(user.fcmToken, {
+        title: 'Welcome!',
+        body: `You just logged in as ${user.userName}`,
+        data: { screen: 'login' },
+      })
+      .catch(() => {});
 
     return { accessToken, refreshToken };
   }

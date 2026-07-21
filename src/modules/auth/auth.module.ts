@@ -15,6 +15,7 @@ import { PasswordPipe } from 'src/common/pipe/password.pipe';
 import { UserBlock } from 'src/common/pipe/UserBlock.pipe';
 import { EmailService } from '../../notifications/email.service';
 import { AuthController } from './auth.controller';
+import { NotificationsModule } from '../../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthController } from './auth.controller';
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
     }),
+    NotificationsModule,
   ],
   providers: [
     AuthService,

@@ -11,6 +11,8 @@ import {
 } from './attendance_session.schema';
 import { courseSchema } from '../courses/courses.schema';
 import { scheduleSchema } from '../schedules/schedules.schema';
+import { NotificationsModule } from '../../notifications/notifications.module';
+import { userSchema } from '../auth/users.schema';
 
 @Module({
   imports: [
@@ -31,10 +33,12 @@ import { scheduleSchema } from '../schedules/schedules.schema';
         name: 'Schedule',
         schema: scheduleSchema,
       },
+      { name: 'User', schema: userSchema },
     ]),
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
     }),
+    NotificationsModule,
   ],
   providers: [AttendanceService, AttendanceResolver, JwtStrategy],
   exports: [AttendanceService],

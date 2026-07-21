@@ -20,6 +20,9 @@ export class UpdateUserInput {
   @Field({ nullable: true })
   photo_url?: string;
 
+  @Field({ nullable: true })
+  fcmToken?: string;
+
   // @Field({ nullable: true })
   // notification?: string;
 

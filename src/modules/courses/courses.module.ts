@@ -8,6 +8,7 @@ import { JwtStrategy } from 'src/strategies/jwt-auth.strategy';
 import { userSchema } from '../auth/users.schema';
 import { scheduleSchema } from '../schedules/schedules.schema';
 import { CoursesController } from './courses.controller';
+import { NotificationsModule } from '../../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CoursesController } from './courses.controller';
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
     }),
+    NotificationsModule,
   ],
   controllers: [CoursesController],
   providers: [CoursesService, CoursesResolver, JwtStrategy],
