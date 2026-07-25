@@ -25,3 +25,4 @@ import { CoursesController } from './courses.controller';
   exports: [JwtModule],
 })
 export class CoursesModule {}
+

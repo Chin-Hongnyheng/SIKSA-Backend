@@ -16,4 +16,7 @@ export class EditCourseInput {
 
   @Field({ nullable: true })
   course_img?: string;
+
+  @Field({ nullable: true })
+  colorHex?: string;
 }

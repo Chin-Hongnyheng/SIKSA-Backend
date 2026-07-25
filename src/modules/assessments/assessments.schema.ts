@@ -8,6 +8,7 @@ export interface AssessmentAttrs {
   imageBase64?: string;
   course: mongoose.Types.ObjectId;
   created_by: mongoose.Types.ObjectId;
+  isHidden?: boolean;
 }
 
 export interface AssessmentDoc extends mongoose.Document {
@@ -18,6 +19,7 @@ export interface AssessmentDoc extends mongoose.Document {
   imageBase64?: string;
   course: mongoose.Types.ObjectId;
   created_by: mongoose.Types.ObjectId;
+  isHidden: boolean;
   created_at: Date;
 }
 
@@ -41,6 +43,7 @@ export const assessmentSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  isHidden: { type: Boolean, default: false },
   created_at: { type: Date, default: Date.now },
 });
 

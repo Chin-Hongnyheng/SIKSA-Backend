@@ -27,7 +27,7 @@ function extractUser(context: any): { userId: string; role: string } {
 export class GradesResolver {
   constructor(private readonly gradesService: GradesService) { }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('grade:upsert')
   @Mutation(() => UpsertGradeResponse)
   upsertGrade(
@@ -38,7 +38,7 @@ export class GradesResolver {
     return this.gradesService.upsertGrade(input, userId, role);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('grade:upsert')
   @Mutation(() => UpsertGradeResponse)
   upsertGrades(
@@ -49,7 +49,7 @@ export class GradesResolver {
     return this.gradesService.upsertGrades(input, userId, role);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('grade:view')
   @Query(() => [GradeType])
   getGradesByCourse(

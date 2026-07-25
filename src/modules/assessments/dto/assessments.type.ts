@@ -20,6 +20,9 @@ export class AssessmentsType {
   @Field({ nullable: true })
   imageBase64?: string;
 
+  @Field({ defaultValue: false })
+  isHidden!: boolean;
+
   @Field()
   createdBy!: string;
 

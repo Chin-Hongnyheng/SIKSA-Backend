@@ -48,6 +48,7 @@ export class CoursesService {
         ? subscriberIds.includes(currentUserId)
         : false,
       courseImg: c.course_img ?? null,
+      colorHex: c.colorHex ?? null,
       subscribers: subscribers
         .filter((subscriber: any) => subscriber?.userName && subscriber?.email)
         .map((subscriber: any) => this.mapSubscriber(subscriber)),
@@ -172,6 +173,15 @@ export class CoursesService {
     }
 
     if (role !== 'Admin' && course.created_by?.toString() !== userId) {
+      // Check if the current user is a subscriber
+      const currentUserSub = (course.subscribers ?? []).find(
+        (sub: any) => sub?._id?.toString() === userId || sub?.toString() === userId,
+      );
+
+      if (currentUserSub) {
+        return [this.mapSubscriber(currentUserSub)];
+      }
+
       throw new ForbiddenException(
         'You can only view your own course students',
       );
@@ -194,10 +204,23 @@ export class CoursesService {
 
     return studentIds.size;
   }
-  async updateCourseImage(courseCode: string, imageUrl: string) {
+
+  async addCourseMaterial(courseCode: string, name: string, url: string) {
     const course = await this.courseModel.findOneAndUpdate(
       { courseCode },
-      { course_img: imageUrl },
+      { $push: { materials: { name, url } } },
+      { new: true },
+    );
+    if (!course) {
+      throw new NotFoundException(`Course with code "${courseCode}" not found`);
+    }
+    return course;
+  }
+
+  async addCourseImage(courseCode: string, url: string) {
+    const course = await this.courseModel.findOneAndUpdate(
+      { courseCode },
+      { course_img: url },
       { new: true },
     );
     if (!course) {

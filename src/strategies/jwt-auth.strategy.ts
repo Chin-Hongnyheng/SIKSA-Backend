@@ -16,11 +16,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: any) {
-    console.log("JWT PAYLOAD:", payload);
+    let role = payload.role;
+    if (role === 'Teacher' || role === 'Student') {
+      role = 'User';
+    }
 
     return {
       userId: payload.sub,
-      role: payload.role,
+      role: role,
       userName: payload.userName,
     };
   }

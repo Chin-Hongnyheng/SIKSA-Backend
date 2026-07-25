@@ -40,4 +40,7 @@ export class CoursesType {
 
   @Field({ nullable: true })
   courseImg?: string;
+
+  @Field({ nullable: true })
+  colorHex?: string;
 }

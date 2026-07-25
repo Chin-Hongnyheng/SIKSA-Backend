@@ -112,15 +112,27 @@ export class GradesService {
 
   async getGradesByCourse(courseCode: string, userId: string, role: string) {
     const course = await this.findCourseOrThrow(courseCode);
+    const isOwner = this.isCourseOwner(course, userId);
 
-    if (role !== 'Admin' && !this.isCourseOwner(course, userId)) {
-      throw new ForbiddenException(
-        'You can only view grades for your own courses',
+    let query: any = { course: course._id };
+
+    if (role !== 'Admin' && !isOwner) {
+      // Check if the current user is a subscriber
+      const currentUserSub = (course.subscribers ?? []).find(
+        (sub: any) => sub?._id?.toString() === userId || sub?.toString() === userId,
       );
+
+      if (!currentUserSub) {
+        throw new ForbiddenException(
+          'You can only view grades for your own courses',
+        );
+      }
+      // If student, only fetch their own grades
+      query.studentId = userId;
     }
 
     const grades = await this.gradeModel
-      .find({ course: course._id })
+      .find(query)
       .sort({ assessmentName: 1 })
       .exec();
 

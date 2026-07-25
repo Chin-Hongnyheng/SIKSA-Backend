@@ -17,14 +17,14 @@ export const storage = new CloudinaryStorage({
   } as any,
 });
 
-export const courseStorage = new CloudinaryStorage({
+export const documentStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'course-images',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    transformation: [{ width: 800, height: 400, crop: 'fill' }],
+    folder: 'course-materials',
+    allowed_formats: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png'],
+    resource_type: 'auto',
   } as any,
 });
 
 export const upload = multer({ storage });
-export const courseUpload = multer({ storage: courseStorage });
+

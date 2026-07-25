@@ -1,7 +1,7 @@
-FROM node:18-alpine
+FROM node:20-bookworm-slim
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm install
 COPY . .
 EXPOSE 3000
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:prod"]

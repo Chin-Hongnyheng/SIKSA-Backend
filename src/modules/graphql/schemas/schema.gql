@@ -19,6 +19,7 @@ type AssessmentsType {
   guide: String
   icon: String
   imageBase64: String
+  isHidden: Boolean!
 }
 
 type AttendanceSessionType {
@@ -63,6 +64,7 @@ type CourseSubscriberType {
 }
 
 type CoursesType {
+  colorHex: String
   courseCode: String!
   courseImg: String
   courseName: String!
@@ -104,6 +106,7 @@ input CreateAttendanceSessionInput {
 }
 
 input CreateCourseInput {
+  colorHex: String
   courseCode: String!
   courseName: String!
   course_img: String
@@ -192,6 +195,7 @@ type DeleteScheduleResponse {
 }
 
 input EditCourseInput {
+  colorHex: String
   courseCode: String!
   courseName: String
   course_img: String
@@ -285,6 +289,7 @@ type Mutation {
   register(input: CreateRegisterInput!): RegisterResponse!
   reorderAssessmentFolders(folderIds: [String!]!): ReorderAssessmentFoldersResponse!
   subscribeCourse(courseCode: String!): CreateCourseResponse!
+  toggleAssessmentVisibility(assessmentName: String!, courseCode: String!, isHidden: Boolean!): CreateAssessmentResponse!
   updateAssessmentFolder(input: UpdateAssessmentFolderInput!): AssessmentFolderType!
   updateProfile(input: UpdateUserInput!): UpdateResponse!
   upsertGrade(input: UpsertGradeInput!): UpsertGradeResponse!

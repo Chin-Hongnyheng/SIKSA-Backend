@@ -23,14 +23,20 @@ export class AssessmentsService {
   ) { }
 
   private mapAssessment(a: AssessmentDoc, courseCode: string) {
+    const creatorName =
+      a.created_by && typeof a.created_by === 'object' && 'userName' in a.created_by
+        ? (a.created_by as any).userName
+        : a.created_by?.toString();
+
     return {
       assessmentName: a.assessmentName,
-      courseCode: courseCode,
-      guide: a.guide,
-      icon: a.icon,
-      color: a.color,
-      imageBase64: a.imageBase64,
-      createdBy: a.created_by?.toString(),
+      guide: a.guide ?? null,
+      icon: a.icon ?? null,
+      color: a.color ?? null,
+      imageBase64: a.imageBase64 ?? null,
+      isHidden: a.isHidden ?? false,
+      courseCode,
+      createdBy: creatorName,
       createdAt: a.created_at,
     };
   }
@@ -183,5 +189,34 @@ export class AssessmentsService {
       const populated = a.course as unknown as CourseDoc;
       return this.mapAssessment(a, populated?.courseCode ?? '');
     });
+  }
+
+  async toggleAssessmentVisibility(
+    courseCode: string,
+    assessmentName: string,
+    isHidden: boolean,
+    userId: string,
+    role: string,
+  ) {
+    const course = await this.courseModel.findOne({ courseCode });
+    if (!course) {
+      throw new NotFoundException(`Course with code "${courseCode}" not found`);
+    }
+    if (role !== 'Admin' && course.created_by.toString() !== userId) {
+      throw new ForbiddenException(
+        'You can only modify assessments for your own courses',
+      );
+    }
+    const assessment = await this.assessmentModel.findOneAndUpdate(
+      { assessmentName, course: course._id },
+      { isHidden },
+      { new: true },
+    );
+    if (!assessment) {
+      throw new NotFoundException(
+        `Assessment "${assessmentName}" not found for course "${courseCode}"`,
+      );
+    }
+    return { message: 'Assessment visibility updated successfully' };
   }
 }

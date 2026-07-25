@@ -72,4 +72,23 @@ export class AssessmentsResolver {
     const { userId, role } = extractUser(context);
     return this.assessmentService.getAllMyAssessments(userId, role);
   }
+
+  @Roles('User', 'Admin')
+  @Permissions('assessment:create')
+  @Mutation(() => CreateAssessmentResponse)
+  toggleAssessmentVisibility(
+    @Args('courseCode') courseCode: string,
+    @Args('assessmentName') assessmentName: string,
+    @Args('isHidden') isHidden: boolean,
+    @Context() context: any,
+  ) {
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.toggleAssessmentVisibility(
+      courseCode,
+      assessmentName,
+      isHidden,
+      userId,
+      role,
+    );
+  }
 }
