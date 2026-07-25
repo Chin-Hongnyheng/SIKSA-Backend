@@ -2,33 +2,114 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AssessmentFolderType {
+  assessmentKeys: [String!]!
+  colorHex: String!
+  id: ID!
+  name: String!
+  order: Int!
+}
+
 type AssessmentsType {
   assessmentName: String!
+  color: String
   courseCode: String!
   createdAt: DateTime!
   createdBy: String!
+  guide: String
+  icon: String
+  imageBase64: String
+  isHidden: Boolean!
+}
+
+type AttendanceSessionType {
+  courseCode: String!
+  createdBy: String!
+  date: String!
+  endTime: String!
+  id: ID
+  isActive: Boolean!
+  lateAfterMinutes: Int!
+  password: String!
+  passwordExpiresAt: String
+  passwordRefreshSeconds: Int!
+  startTime: String!
+  title: String!
+}
+
+type AttendanceSummary {
+  absent: Int!
+  late: Int!
+  permission: Int!
+  present: Int!
+}
+
+type AttendanceType {
+  checkIn: String
+  checkOut: String
+  courseCode: String
+  date: String
+  id: ID
+  sessionId: String
+  status: String
+  studentId: String!
+  time: String
+  type: String
+}
+
+type CourseSubscriberType {
+  email: String!
+  id: String!
+  userName: String!
 }
 
 type CoursesType {
+  colorHex: String
   courseCode: String!
+  courseImg: String
   courseName: String!
   createdAt: DateTime!
   createdBy: String!
   description: String
+  isSubscribed: Boolean!
+  subscriberCount: Int!
+  subscribers: [CourseSubscriberType!]!
+}
+
+input CreateAssessmentFolderInput {
+  assessmentKeys: [String!]
+  colorHex: String!
+  name: String!
 }
 
 input CreateAssessmentInput {
   assessmentName: String!
+  color: String
   courseCode: String!
+  guide: String
+  icon: String
+  imageBase64: String
 }
 
 type CreateAssessmentResponse {
   message: String!
 }
 
+input CreateAttendanceSessionInput {
+  courseCode: String!
+  date: String!
+  endTime: String!
+  lateAfterMinutes: Int
+  passwordRefreshSeconds: Int
+  startTime: String!
+  title: String!
+}
+
 input CreateCourseInput {
+  colorHex: String
   courseCode: String!
   courseName: String!
+  course_img: String
   description: String
 }
 
@@ -53,19 +134,40 @@ input CreateRegisterInput {
   dob: DateTime
   email: String!
   gender: String
-  language: String! = "ENGLISH"
-  notification: String! = "ON"
   password: String!
-  phone: Float!
+  phone: Float
   photo_url: String
   role: String
   userName: String!
+}
+
+input CreateScheduleInput {
+  color: String
+  courseCode: String!
+  date: DateTime
+  endDate: DateTime
+  endTime: DateTime!
+  location: String!
+  recurrenceType: String!
+  reminder: Float
+  selectedDays: [String!]
+  startDate: DateTime
+  startTime: DateTime!
+}
+
+type CreateScheduleResponse {
+  message: String!
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type DeleteAssessmentFolderResponse {
+  message: String!
+  success: Boolean!
+}
 
 input DeleteAssessmentInput {
   assessmentName: String!
@@ -84,9 +186,19 @@ type DeleteCourseResponse {
   message: String!
 }
 
+input DeleteScheduleInput {
+  scheduleId: String!
+}
+
+type DeleteScheduleResponse {
+  message: String!
+}
+
 input EditCourseInput {
+  colorHex: String
   courseCode: String!
   courseName: String
+  course_img: String
   description: String
   newCourseCode: String
 }
@@ -95,8 +207,48 @@ type EditCourseResponse {
   message: String!
 }
 
+input EditScheduleInput {
+  color: String
+  courseCode: String
+  date: DateTime
+  endDate: DateTime
+  endTime: DateTime
+  location: String
+  recurrenceType: String
+  reminder: Float
+  scheduleId: String!
+  selectedDays: [String!]
+  startDate: DateTime
+  startTime: DateTime
+}
+
+type EditScheduleResponse {
+  message: String!
+}
+
 type ForgetResponse {
   message: String!
+}
+
+input GoogleAuthInput {
+  idToken: String!
+  role: String!
+}
+
+type GoogleAuthResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type GradeType {
+  assessmentName: String!
+  courseCode: String!
+  gradedAt: DateTime!
+  gradedBy: String!
+  maxScore: Float!
+  score: Float!
+  studentId: String!
+  studentName: String!
 }
 
 type LoginResponse {
@@ -104,34 +256,106 @@ type LoginResponse {
   refreshToken: String!
 }
 
+input MarkAttendanceInput {
+  checkIn: String
+  checkOut: String
+  courseCode: String!
+  date: String!
+  sessionId: String
+  status: String
+  studentId: String!
+}
+
 type Mutation {
+  closeAttendanceSession(sessionId: String!): AttendanceSessionType!
   createAssessment(input: CreateAssessmentInput!): CreateAssessmentResponse!
+  createAssessmentFolder(input: CreateAssessmentFolderInput!): AssessmentFolderType!
+  createAttendanceSession(input: CreateAttendanceSessionInput!): AttendanceSessionType!
   createCourse(input: CreateCourseInput!): CreateCourseResponse!
+  createSchedule(input: CreateScheduleInput!): CreateScheduleResponse!
   deleteAssessment(input: DeleteAssessmentInput!): DeleteAssessmentResponse!
+  deleteAssessmentFolder(id: String!): DeleteAssessmentFolderResponse!
+  deleteAttendanceSession(sessionId: String!): Boolean!
   deleteCourse(input: DeleteCourseInput!): DeleteCourseResponse!
+  deleteSchedule(input: DeleteScheduleInput!): DeleteScheduleResponse!
   editCourse(input: EditCourseInput!): EditCourseResponse!
+  editSchedule(input: EditScheduleInput!): EditScheduleResponse!
   forgetPassword(input: CreateForgetInput!): ForgetResponse!
+  googleAuth(input: GoogleAuthInput!): GoogleAuthResponse!
   login(input: CreateLoginInput!): LoginResponse!
+  markAttendance(input: MarkAttendanceInput!): AttendanceType!
   refresh(refreshToken: String!): LoginResponse!
+  refreshAttendanceSessionPassword(sessionId: String!): AttendanceSessionType!
   register(input: CreateRegisterInput!): RegisterResponse!
+  reorderAssessmentFolders(folderIds: [String!]!): ReorderAssessmentFoldersResponse!
+  subscribeCourse(courseCode: String!): CreateCourseResponse!
+  toggleAssessmentVisibility(assessmentName: String!, courseCode: String!, isHidden: Boolean!): CreateAssessmentResponse!
+  updateAssessmentFolder(input: UpdateAssessmentFolderInput!): AssessmentFolderType!
   updateProfile(input: UpdateUserInput!): UpdateResponse!
+  upsertGrade(input: UpsertGradeInput!): UpsertGradeResponse!
+  upsertGrades(input: UpsertGradesInput!): UpsertGradeResponse!
   validateLogin(input: CreateLoginInput!): String!
   validateRegister(input: CreateRegisterInput!): String!
 }
 
 type Query {
+  activeAttendanceSessionsByCourse(courseCode: String!): [AttendanceSessionType!]!
+  attendanceSession(sessionId: String!): AttendanceSessionType!
+  attendanceSessionsByCourse(courseCode: String!): [AttendanceSessionType!]!
+  courseAttendance(courseCode: String!): [AttendanceType!]!
   getAllCourses: [CoursesType!]!
   getAllMyAssessments: [AssessmentsType!]!
+  getAllSchedules: [Schedule!]!
   getAssessmentsByCourseCode(courseCode: String!): [AssessmentsType!]!
   getCourseByCode(courseCode: String!): CoursesType!
+  getCourseSubscribers(courseCode: String!): [CourseSubscriberType!]!
+  getEnrolledSchedules: [Schedule!]!
+  getGradesByCourse(courseCode: String!): [GradeType!]!
+  getMyAssessmentFolders: [AssessmentFolderType!]!
   getMyCourses: [CoursesType!]!
+  getMySchedules: [Schedule!]!
+  getMyTotalStudents: Int!
+  getSchedulesByCourse(courseCode: String!): [Schedule!]!
   me: UserType!
+  sessionAttendance(sessionId: String!): [AttendanceType!]!
+  studentAttendance(studentId: String!): [AttendanceType!]!
+  studentAttendanceSummary(studentId: String!): AttendanceSummary!
+  verifyAttendanceSessionPassword(password: String!, sessionId: String!): Boolean!
 }
 
 type RegisterResponse {
   accessToken: String!
   message: String!
   refreshToken: String!
+}
+
+type ReorderAssessmentFoldersResponse {
+  message: String!
+  success: Boolean!
+}
+
+type Schedule {
+  color: String
+  courseCode: String!
+  createdAt: DateTime!
+  createdBy: String!
+  date: DateTime
+  endDate: DateTime
+  endTime: DateTime!
+  location: String
+  recurrenceType: String!
+  reminder: Float
+  scheduleId: String!
+  selectedDays: [String!]
+  startDate: DateTime
+  startTime: DateTime!
+}
+
+input UpdateAssessmentFolderInput {
+  assessmentKeys: [String!]
+  colorHex: String
+  id: ID!
+  name: String
 }
 
 type UpdateResponse {
@@ -143,21 +367,36 @@ input UpdateUserInput {
   address: String
   dob: DateTime
   gender: String
-  language: String
-  notification: String
+  phone: Float
   photo_url: String
   userName: String
 }
 
+input UpsertGradeInput {
+  assessmentName: String!
+  courseCode: String!
+  maxScore: Float = 100
+  score: Float!
+  studentId: String!
+}
+
+type UpsertGradeResponse {
+  message: String!
+}
+
+input UpsertGradesInput {
+  grades: [UpsertGradeInput!]!
+}
+
 type UserType {
   address: String
-  dob: DateTime!
+  dob: DateTime
   email: String!
-  gender: String!
+  gender: String
   id: ID!
-  language: String!
-  notification: String!
-  phone: Float!
+  language: String
+  notification: String
+  phone: Float
   photo_url: String
   role: String!
   userName: String!

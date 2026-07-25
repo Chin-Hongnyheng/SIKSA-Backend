@@ -1,14 +1,7 @@
-FROM node:20-alpine
-
+FROM node:20-bookworm-slim
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
-
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm install
 COPY . .
-
-RUN npm run build 
-
 EXPOSE 3000
-
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start:prod"]

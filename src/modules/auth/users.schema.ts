@@ -5,17 +5,17 @@ import { randomUUID } from 'crypto';
 export interface UserAttrs {
   userName: string;
   email: string;
-  phone: number;
+  phone?: number;
   password: string;
-  role?: 'Student' | 'Teacher' | 'Admin';
+  role?: 'User' | 'Admin';
 
   dob?: Date;
   gender?: 'Male' | 'Female' | 'Other';
   address?: string;
   photo_url?: string;
 
-  notification?: 'ON' | 'OFF';
-  language?: 'ENGLISH' | 'KHMER';
+  // notification?: 'ON' | 'OFF';
+  // language?: 'ENGLISH' | 'KHMER';
 }
 
 // Store the data
@@ -25,14 +25,14 @@ export interface UserDoc extends mongoose.Document {
   email: string;
   phone: number;
   password: string;
-  role: 'Student' | 'Teacher' | 'Admin';
+  role: 'User' | 'Admin';
   dob?: Date;
   gender?: 'Male' | 'Female' | 'Other';
   address?: string;
   photo_url?: string;
 
-  notification?: 'ON' | 'OFF';
-  language?: 'ENGLISH' | 'KHMER';
+  // notification?: 'ON' | 'OFF';
+  // language?: 'ENGLISH' | 'KHMER';
   created_at: Date;
 }
 
@@ -44,19 +44,23 @@ export interface UserModel extends mongoose.Model<UserDoc> {
 export const userSchema = new mongoose.Schema({
   userName: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
-  phone: { type: Number, required: true, unique: true },
+  phone: { type: Number, required: false, unique: true, sparse: true },
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ['Student', 'Teacher', 'Admin'],
-    default: 'Student',
+    enum: ['User', 'Admin'],
+    default: 'User',
   },
   dob: { type: Date, default: null },
-  gender: { type: String, enum: ['Male', 'Female', 'Other'], default: null },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female', 'Other', null, ''],
+    default: null,
+  },
   address: { type: String, default: null },
   photo_url: { type: String, default: null },
-  notification: { type: String, enum: ['ON', 'OFF'], default: 'ON' },
-  language: { type: String, enum: ['ENGLISH', 'KHMER'], default: 'ENGLISH' },
+  // notification: { type: String, enum: ['ON', 'OFF'], default: 'ON' },
+  // language: { type: String, enum: ['ENGLISH', 'KHMER'], default: 'ENGLISH' },
 
   created_at: { type: Date, default: Date.now },
 });

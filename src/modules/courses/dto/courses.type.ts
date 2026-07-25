@@ -1,4 +1,16 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
+
+@ObjectType()
+export class CourseSubscriberType {
+  @Field()
+  id!: string;
+
+  @Field()
+  userName!: string;
+
+  @Field()
+  email!: string;
+}
 
 @ObjectType()
 export class CoursesType {
@@ -16,4 +28,19 @@ export class CoursesType {
 
   @Field()
   createdAt!: Date;
+
+  @Field(() => Int)
+  subscriberCount!: number;
+
+  @Field()
+  isSubscribed!: boolean;
+
+  @Field(() => [CourseSubscriberType])
+  subscribers!: CourseSubscriberType[];
+
+  @Field({ nullable: true })
+  courseImg?: string;
+
+  @Field({ nullable: true })
+  colorHex?: string;
 }

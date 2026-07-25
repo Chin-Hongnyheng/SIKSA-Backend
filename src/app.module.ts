@@ -10,6 +10,10 @@ import { CoursesModule } from './modules/courses/courses.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AssessmentsModule } from './modules/assessments/assessments.module';
+import { SchedulesModule } from './modules/schedules/schedules.module';
+import { AttendanceModule } from './modules/attendance/attendance.module';
+import { GradesModule } from './modules/grades/grades.module';
+import { AssessmentFoldersModule } from './modules/assessment-folders/assessment-folders.module';
 
 @Module({
   imports: [
@@ -27,8 +31,12 @@ import { AssessmentsModule } from './modules/assessments/assessments.module';
     RedisModule,
     AuthModule,
     AssessmentsModule,
+    SchedulesModule,
+    AttendanceModule,
+    GradesModule,
+    AssessmentFoldersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

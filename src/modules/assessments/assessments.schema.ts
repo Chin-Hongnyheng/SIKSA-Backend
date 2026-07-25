@@ -2,14 +2,24 @@ import mongoose from 'mongoose';
 
 export interface AssessmentAttrs {
   assessmentName: string;
+  guide?: string;
+  icon?: string;
+  color?: string;
+  imageBase64?: string;
   course: mongoose.Types.ObjectId;
   created_by: mongoose.Types.ObjectId;
+  isHidden?: boolean;
 }
 
 export interface AssessmentDoc extends mongoose.Document {
   assessmentName: string;
+  guide?: string;
+  icon?: string;
+  color?: string;
+  imageBase64?: string;
   course: mongoose.Types.ObjectId;
   created_by: mongoose.Types.ObjectId;
+  isHidden: boolean;
   created_at: Date;
 }
 
@@ -18,7 +28,11 @@ export interface AssessmentModel extends mongoose.Model<AssessmentDoc> {
 }
 
 export const assessmentSchema = new mongoose.Schema({
-  assessmentName: { type: String, required: true, unique: true },
+  assessmentName: { type: String, required: true },
+  guide: { type: String, default: null },
+  icon: { type: String, default: null },
+  color: { type: String, default: null },
+  imageBase64: { type: String, default: null },
   course: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
@@ -29,6 +43,7 @@ export const assessmentSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  isHidden: { type: Boolean, default: false },
   created_at: { type: Date, default: Date.now },
 });
 
@@ -36,7 +51,10 @@ assessmentSchema.statics.build = (attrs: AssessmentAttrs) => {
   return new Assessment(attrs);
 };
 
+assessmentSchema.index({ assessmentName: 1, course: 1 }, { unique: true });
+
 export const Assessment = mongoose.model<AssessmentDoc, AssessmentModel>(
   'Assessment',
   assessmentSchema,
 );
+

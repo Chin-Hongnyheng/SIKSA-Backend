@@ -14,13 +14,18 @@ import { UserType } from './dto/users.type';
 import { VerifyUserPipe } from '../../common/pipe/user-verification.pipe';
 import { UpdateUserInput } from './dto/update.input';
 import { UpdateResponse } from './dto/update.response';
+import { GoogleAuthInput } from './dto/google-auth.input';
+import { GoogleAuthResponse } from './dto/google-auth.response';
 
 @Resolver()
 export class AuthResolver {
   constructor(private authService: AuthService) {}
 
   @Mutation(() => String)
-  validateRegister(@Args('input', VerifyUserPipe) input: CreateRegisterInput) {
+  async validateRegister(
+    @Args('input', VerifyUserPipe) input: CreateRegisterInput,
+  ) {
+    await this.authService.validateRegister(input);
     return 'validation register success';
   }
 
@@ -76,5 +81,10 @@ export class AuthResolver {
       message: 'Profile updated successfully',
       user,
     };
+  }
+
+  @Mutation(() => GoogleAuthResponse)
+  googleAuth(@Args('input') input: GoogleAuthInput) {
+    return this.authService.googleAuth(input);
   }
 }

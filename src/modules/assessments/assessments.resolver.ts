@@ -12,14 +12,15 @@ import { DeleteAssessmentInput } from './dto/deleteAssessment.input';
 import { DeleteAssessmentResponse } from './dto/deleteAssessment.response';
 import { AssessmentsType } from './dto/assessments.type';
 
-function extractUserId(context: any): string {
-  const userId = context?.req?.user?.userId;
+function extractUser(context: any): { userId: string; role: string } {
+  const user = context?.req?.user;
+  const userId = user?.userId;
   if (!userId) {
     throw new ForbiddenException(
       'You must be logged in to perform this action',
     );
   }
-  return userId;
+  return { userId, role: user?.role ?? '' };
 }
 
 @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
@@ -27,36 +28,67 @@ function extractUserId(context: any): string {
 export class AssessmentsResolver {
   constructor(private readonly assessmentService: AssessmentsService) {}
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('assessment:create')
   @Mutation(() => CreateAssessmentResponse)
   createAssessment(
     @Args('input') input: CreateAssessmentInput,
     @Context() context: any,
   ) {
-    const userId = extractUserId(context);
-    return this.assessmentService.createAssessment(input, userId);
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.createAssessment(input, userId, role);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('assessment:delete')
   @Mutation(() => DeleteAssessmentResponse)
-  deleteAssessment(@Args('input') input: DeleteAssessmentInput) {
-    return this.assessmentService.deleteAssessment(input);
+  deleteAssessment(
+    @Args('input') input: DeleteAssessmentInput,
+    @Context() context: any,
+  ) {
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.deleteAssessment(input, userId, role);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('assessment:view')
   @Query(() => [AssessmentsType])
-  getAssessmentsByCourseCode(@Args('courseCode') courseCode: string) {
-    return this.assessmentService.getAssessmentsByCourseCode(courseCode);
+  getAssessmentsByCourseCode(
+    @Args('courseCode') courseCode: string,
+    @Context() context: any,
+  ) {
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.getAssessmentsByCourseCode(
+      courseCode,
+      userId,
+      role,
+    );
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('assessment:view')
   @Query(() => [AssessmentsType])
   getAllMyAssessments(@Context() context: any) {
-    const userId = extractUserId(context);
-    return this.assessmentService.getAllMyAssessments(userId);
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.getAllMyAssessments(userId, role);
+  }
+
+  @Roles('User', 'Admin')
+  @Permissions('assessment:create')
+  @Mutation(() => CreateAssessmentResponse)
+  toggleAssessmentVisibility(
+    @Args('courseCode') courseCode: string,
+    @Args('assessmentName') assessmentName: string,
+    @Args('isHidden') isHidden: boolean,
+    @Context() context: any,
+  ) {
+    const { userId, role } = extractUser(context);
+    return this.assessmentService.toggleAssessmentVisibility(
+      courseCode,
+      assessmentName,
+      isHidden,
+      userId,
+      role,
+    );
   }
 }

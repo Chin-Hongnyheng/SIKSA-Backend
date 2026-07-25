@@ -1,10 +1,15 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AssessmentDoc, AssessmentModel } from './assessments.schema';
 import { CreateAssessmentInput } from './dto/createAssessment.input';
 import { DeleteAssessmentInput } from './dto/deleteAssessment.input';
 import { CourseDoc, CourseModel } from '../courses/courses.schema';
+import { GradeDoc } from '../grades/grades.schema';
 
 @Injectable()
 export class AssessmentsService {
@@ -13,24 +18,56 @@ export class AssessmentsService {
     private readonly assessmentModel: Model<AssessmentDoc>,
     @InjectModel('Course')
     private readonly courseModel: Model<CourseDoc>,
-  ) {}
+    @InjectModel('Grade')
+    private readonly gradeModel: Model<GradeDoc>,
+  ) { }
 
   private mapAssessment(a: AssessmentDoc, courseCode: string) {
+    const creatorName =
+      a.created_by && typeof a.created_by === 'object' && 'userName' in a.created_by
+        ? (a.created_by as any).userName
+        : a.created_by?.toString();
+
     return {
       assessmentName: a.assessmentName,
-      courseCode: courseCode,
-      createdBy: a.created_by?.toString(),
+      guide: a.guide ?? null,
+      icon: a.icon ?? null,
+      color: a.color ?? null,
+      imageBase64: a.imageBase64 ?? null,
+      isHidden: a.isHidden ?? false,
+      courseCode,
+      createdBy: creatorName,
       createdAt: a.created_at,
     };
   }
 
-  async createAssessment(input: CreateAssessmentInput, userId: string) {
+  private isCourseOwner(course: CourseDoc, userId: string) {
+    return course.created_by?.toString() === userId;
+  }
+
+  private isCourseSubscriber(course: CourseDoc, userId: string) {
+    return (course.subscribers ?? []).some(
+      (subscriber: any) => subscriber?.toString() === userId,
+    );
+  }
+
+  async createAssessment(
+    input: CreateAssessmentInput,
+    userId: string,
+    role: string,
+  ) {
     const course = await this.courseModel.findOne({
       courseCode: input.courseCode,
     });
     // is this course exist?
     if (!course) {
       throw new Error(`Course with code "${input.courseCode}" not found`);
+    }
+
+    if (role !== 'Admin' && !this.isCourseOwner(course, userId)) {
+      throw new ForbiddenException(
+        'You can only create assessments for your own courses',
+      );
     }
 
     const existing = await this.assessmentModel.findOne({
@@ -46,6 +83,10 @@ export class AssessmentsService {
 
     const assessment = new this.assessmentModel({
       assessmentName: input.assessmentName,
+      guide: input.guide?.trim() || null,
+      icon: input.icon?.trim() || null,
+      color: input.color?.trim() || null,
+      imageBase64: input.imageBase64 || null,
       course: course._id,
       created_by: userId,
       created_at: new Date(),
@@ -55,7 +96,11 @@ export class AssessmentsService {
     return { message: 'Assessment created successfully' };
   }
 
-  async deleteAssessment(input: DeleteAssessmentInput) {
+  async deleteAssessment(
+    input: DeleteAssessmentInput,
+    userId: string,
+    role: string,
+  ) {
     const course = await this.courseModel.findOne({
       courseCode: input.courseCode,
     });
@@ -63,11 +108,16 @@ export class AssessmentsService {
       throw new Error(`Course with code "${input.courseCode}" not found`);
     }
 
-    // Delete it
-    const deleted = await this.assessmentModel.findOneAndDelete({
+    const filter: Record<string, any> = {
       course: course._id,
       assessmentName: input.assessmentName,
-    });
+    };
+
+    if (role !== 'Admin') {
+      filter.created_by = userId;
+    }
+
+    const deleted = await this.assessmentModel.findOneAndDelete(filter);
 
     if (!deleted) {
       throw new Error(
@@ -75,17 +125,39 @@ export class AssessmentsService {
       );
     }
 
+    // Cascade-delete all grade records tied to this assessment + course
+    await this.gradeModel.deleteMany({
+      course: course._id,
+      assessmentName: input.assessmentName,
+    });
+
     return { message: 'Assessment deleted successfully' };
   }
 
-  async getAssessmentsByCourseCode(courseCode: string) {
+  async getAssessmentsByCourseCode(
+    courseCode: string,
+    userId: string,
+    role: string,
+  ) {
     const course = await this.courseModel.findOne({ courseCode });
     if (!course) {
       throw new NotFoundException(`Course with code "${courseCode}" not found`);
     }
 
+    const filter: Record<string, any> = { course: course._id };
+
+    if (role === 'User') {
+      filter.created_by = userId;
+    } else if (role === 'Student') {
+      if (!this.isCourseSubscriber(course, userId)) {
+        throw new ForbiddenException(
+          'You can only view assessments for subscribed courses',
+        );
+      }
+    }
+
     const assessments = await this.assessmentModel
-      .find({ course: course._id })
+      .find(filter)
       .sort({ created_at: -1 })
       .exec();
 
@@ -93,9 +165,22 @@ export class AssessmentsService {
     return assessments.map((a) => this.mapAssessment(a, courseCode));
   }
 
-  async getAllMyAssessments(userId: string) {
+  async getAllMyAssessments(userId: string, role: string) {
+    const filter: Record<string, any> = {};
+
+    if (role === 'User') {
+      filter.created_by = userId;
+    } else if (role === 'Student') {
+      const subscribedCourses = await this.courseModel
+        .find({ subscribers: userId })
+        .select('_id')
+        .exec();
+
+      filter.course = { $in: subscribedCourses.map((course) => course._id) };
+    }
+
     const assessments = await this.assessmentModel
-      .find({ created_by: userId })
+      .find(filter)
       .populate('course', 'courseCode')
       .sort({ created_at: -1 })
       .exec();
@@ -104,5 +189,34 @@ export class AssessmentsService {
       const populated = a.course as unknown as CourseDoc;
       return this.mapAssessment(a, populated?.courseCode ?? '');
     });
+  }
+
+  async toggleAssessmentVisibility(
+    courseCode: string,
+    assessmentName: string,
+    isHidden: boolean,
+    userId: string,
+    role: string,
+  ) {
+    const course = await this.courseModel.findOne({ courseCode });
+    if (!course) {
+      throw new NotFoundException(`Course with code "${courseCode}" not found`);
+    }
+    if (role !== 'Admin' && course.created_by.toString() !== userId) {
+      throw new ForbiddenException(
+        'You can only modify assessments for your own courses',
+      );
+    }
+    const assessment = await this.assessmentModel.findOneAndUpdate(
+      { assessmentName, course: course._id },
+      { isHidden },
+      { new: true },
+    );
+    if (!assessment) {
+      throw new NotFoundException(
+        `Assessment "${assessmentName}" not found for course "${courseCode}"`,
+      );
+    }
+    return { message: 'Assessment visibility updated successfully' };
   }
 }

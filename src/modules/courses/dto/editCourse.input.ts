@@ -13,4 +13,10 @@ export class EditCourseInput {
 
   @Field({ nullable: true })
   description?: string;
+
+  @Field({ nullable: true })
+  course_img?: string;
+
+  @Field({ nullable: true })
+  colorHex?: string;
 }

@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query, Context, Int } from '@nestjs/graphql';
 import { UseGuards, ForbiddenException } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
@@ -12,7 +12,7 @@ import { EditCourseInput } from './dto/editCourse.input';
 import { EditCourseResponse } from './dto/editCourse.response';
 import { DeleteCourseInput } from './dto/deleteCourse.input';
 import { DeleteCourseResponse } from './dto/deleteCourse.response';
-import { CoursesType } from './dto/courses.type';
+import { CoursesType, CourseSubscriberType } from './dto/courses.type';
 
 function extractUserId(context: any): string {
   const userId = context?.req?.user?.userId;
@@ -30,7 +30,7 @@ function extractUserId(context: any): string {
 export class CoursesResolver {
   constructor(private readonly coursesService: CoursesService) {}
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:create')
   @Mutation(() => CreateCourseResponse)
   createCourse(
@@ -41,38 +41,76 @@ export class CoursesResolver {
     return this.coursesService.createCourse(input, userId);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:edit')
   @Mutation(() => EditCourseResponse)
   editCourse(@Args('input') input: EditCourseInput) {
     return this.coursesService.editCourse(input);
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
   @Permissions('course:delete')
   @Mutation(() => DeleteCourseResponse)
   deleteCourse(@Args('input') input: DeleteCourseInput) {
     return this.coursesService.deleteCourse(input);
   }
 
-  @Roles('Student', 'Admin')
-  @Permissions('course:view')
-  @Query(() => [CoursesType])
-  getAllCourses() {
-    return this.coursesService.getAllCourses();
-  }
-  @Roles('Student', 'Admin')
-  @Permissions('course:view')
-  @Query(() => CoursesType)
-  getCourseByCode(@Args('courseCode') courseCode: string) {
-    return this.coursesService.getCourseByCode(courseCode);
+  @Roles('User')
+  @Permissions('course:subscribe')
+  @Mutation(() => CreateCourseResponse)
+  subscribeCourse(
+    @Args('courseCode') courseCode: string,
+    @Context() context: any,
+  ) {
+    const userId = extractUserId(context);
+    return this.coursesService.subscribeCourse(courseCode, userId);
+
   }
 
-  @Roles('Teacher', 'Admin')
+  @Roles('User', 'Admin')
+  @Permissions('course:view')
+  @Query(() => [CoursesType])
+  getAllCourses(@Context() context: any) {
+    const userId = context?.req?.user?.userId;
+    return this.coursesService.getAllCourses(userId);
+  }
+
+  @Roles('User', 'Admin')
+  @Permissions('course:view')
+  @Query(() => CoursesType)
+  getCourseByCode(
+    @Args('courseCode') courseCode: string,
+    @Context() context: any,
+  ) {
+    const userId = context?.req?.user?.userId;
+    return this.coursesService.getCourseByCode(courseCode, userId);
+  }
+
+  @Roles('User', 'Admin')
   @Permissions('course:view')
   @Query(() => [CoursesType])
   getMyCourses(@Context() context: any) {
-    const userId = context?.req?.user?.userId;
+    const userId = extractUserId(context);
     return this.coursesService.getMyCourses(userId);
+  }
+
+  @Roles('User', 'Admin')
+  @Permissions('course:view')
+  @Query(() => [CourseSubscriberType])
+  getCourseSubscribers(
+    @Args('courseCode') courseCode: string,
+    @Context() context: any,
+  ) {
+    const userId = extractUserId(context);
+    const role = context?.req?.user?.role;
+    return this.coursesService.getCourseSubscribers(courseCode, userId, role);
+  }
+
+  @Roles('User', 'Admin')
+  @Permissions('course:view')
+  @Query(() => Int)
+  getMyTotalStudents(@Context() context: any) {
+    const userId = extractUserId(context);
+    return this.coursesService.getMyTotalStudents(userId);
   }
 }

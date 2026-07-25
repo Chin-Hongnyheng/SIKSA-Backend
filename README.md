@@ -31,6 +31,28 @@
 $ npm install
 ```
 
+## MongoDB setup
+
+Create a `.env` file in the backend root and add your MongoDB connection values:
+
+```env
+MONGO_URI=mongodb://127.0.0.1:27017
+MONGO_DB=siksa
+```
+
+Examples:
+
+- Local MongoDB: `MONGO_URI=mongodb://127.0.0.1:27017`
+- MongoDB Atlas: `MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/`
+
+Then start the backend:
+
+```bash
+$ npm run start:dev
+```
+
+If the connection succeeds, the app will log that MongoDB is connected during startup.
+
 ## Compile and run the project
 
 ```bash
